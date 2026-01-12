@@ -4,6 +4,7 @@ const teamData = [
         primaryRole: "Primary Coder",
         secondaryRole: "Secondary Data Architect",
         image: "images/tom_chen.avif",
+        fallback: "images/tom_chen.jpg",
         linkedin: "https://www.linkedin.com/in/tomchen1581"
     },
     {
@@ -11,6 +12,7 @@ const teamData = [
         primaryRole: "Primary Data Architect",
         secondaryRole: "Secondary Project Manager",
         image: "images/jeremy_senh.avif",
+        fallback: "images/jeremy_senh_cropped.png",
         linkedin: "https://www.linkedin.com/in/jeremy-senh/"
     },
     {
@@ -18,6 +20,7 @@ const teamData = [
         primaryRole: "Primary Designer",
         secondaryRole: "Secondary Coder",
         image: "images/christopher_straface.avif",
+        fallback: "images/christopher_straface.jpg",
         linkedin: "https://www.linkedin.com/in/christopher-straface-a84338276/"
     },
 
@@ -26,6 +29,7 @@ const teamData = [
         primaryRole: "Primary Project Manager",
         secondaryRole: "Secondary Designer",
         image: "images/chloe_to.avif",
+        fallback: "images/chloe_to.png",
         linkedin: "https://www.linkedin.com/in/chloe--to"
     }
 ];
@@ -34,16 +38,20 @@ function createTeamMemberCard(member) {
     const card = document.createElement('div');
     card.className = 'team-member';
 
-    const imageContainer = document.createElement('div');
+    const imageContainer = document.createElement('picture');
     imageContainer.className = 'member-image-container';
 
-    if (member.image) {
-        const img = document.createElement('img');
-        img.src = member.image;
-        img.alt = member.name;
-        img.className = 'member-image';
-        imageContainer.appendChild(img);
-    }
+    const source = document.createElement('source');
+    source.srcset = member.image;
+    source.type = 'image/avif';
+    source.classList.add('member-image');
+    imageContainer.appendChild(source);
+
+    const img = document.createElement('img');
+    img.src = member.image;
+    img.alt = member.name;
+    img.className = 'member-image';
+    imageContainer.appendChild(img);
 
     const info = document.createElement('div');
     info.className = 'member-info';
