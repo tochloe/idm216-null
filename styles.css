@@ -1,0 +1,340 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-wrap: pretty;
+}
+
+body {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container */
+.container {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #0f1427, #36478d);
+    position: relative;
+    overflow: auto;
+}
+
+/* Header */
+.header {
+    padding: 33px 50px 32px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    color: white;
+    gap: 16px;
+}
+
+.header-title {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 40px;
+    margin: 0;
+}
+
+.header-subtitle {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 24px;
+    text-align: right;
+    margin: 0;
+}
+
+/* Intro Section */
+.intro-section {
+    text-align: center;
+    padding: 0 16px;
+    margin-bottom: 48px;
+    color: white;
+}
+
+.intro-title {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 40px;
+    margin-bottom: 82px;
+}
+
+.intro-text {
+    max-width: 1073px;
+    margin: 0 auto;
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 24px;
+    line-height: 1.6;
+}
+
+.intro-paragraph {
+    margin-bottom: 32px;
+}
+
+.mono-text {
+    font-family: 'DM Mono', monospace;
+    color: #fc0;
+}
+
+/* Team Section */
+.team-section {
+    margin: 0 50px;
+    background: white;
+    border-radius: 30px 30px 0 0;
+    padding: 50px 83px 80px;
+}
+
+.team-heading {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-style: italic;
+    font-size: 24px;
+    color: black;
+    margin-bottom: 51px;
+}
+
+/* Team Grid */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    max-width: 100%;
+}
+
+/* Team Member Card */
+.team-member {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 250px;
+    margin: 0 auto;
+}
+
+.member-image-container {
+    aspect-ratio: 1;
+    width: 100%;
+    border-radius: 0 50px 0 0;
+    overflow: hidden;
+    background-color: #d9d9d9;
+    transition: transform 0.3s ease;
+}
+
+
+.member-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.member-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.member-name {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 24px;
+    color: #0f1427;
+    margin: 0;
+    position: relative;
+    display: inline-block;
+    width: fit-content;
+    transition: color 0.3s ease;
+}
+
+.member-link {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 16px;
+    color: #0f1427;
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    width: fit-content;
+    transition: color 0.3s ease;
+}
+
+/* underline animation */
+.member-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #36478d;
+    transition: width 0.3s ease;
+}
+
+.member-link:hover {
+    color: #36478d;
+}
+
+.member-link:hover::after {
+    width: 100%;
+}
+
+.member-link:active {
+    transform: scale(0.98);
+}
+
+
+.linkedin-icon {
+    display: inline-block;
+    margin-left: 6px;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    font-size: 18px;
+}
+
+.member-link .linkedin-icon {
+    display: inline-block;
+    margin-left: 6px;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    font-size: 14px;
+}
+
+.member-link:hover .linkedin-icon {
+    opacity: 1;
+    transform: translateX(3px);
+}
+
+.member-role {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 20px;
+    color: #0f1427;
+    margin: 0;
+    word-wrap: break-word;
+}
+
+.role-primary {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-weight: bold;
+    font-style: italic;
+}
+
+/* Responsive */
+
+@media (max-width: 1280px) {
+    .team-section {
+        margin: 0 30px;
+        padding: 50px 50px 80px;
+    }
+
+    .team-grid {
+        gap: 35px;
+    }
+}
+
+/* LARGE */
+@media (930px <=width < 1024px) {
+    .header {
+        padding: 33px 30px 32px;
+    }
+
+    .header-title {
+        font-size: 32px;
+    }
+
+    .header-subtitle {
+        font-size: 20px;
+    }
+
+    .intro-title {
+        font-size: 36px;
+        margin-bottom: 48px;
+    }
+
+    .intro-text {
+        font-size: 22px;
+        max-width: 800px;
+    }
+
+    .team-section {
+        padding: 50px 30px 80px;
+    }
+
+    .team-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 30px;
+    }
+
+    .team-member {
+        max-width: 220px;
+    }
+
+    .member-name {
+        font-size: 22px;
+    }
+
+    .member-role {
+        font-size: 18px;
+    }
+}
+
+/* Medium screens - 2 columns */
+@media (width < 930px) {
+    .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+
+    .team-member {
+        max-width: 100%;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 640px) {
+    .header {
+        padding: 55px 20px 32px;
+    }
+
+    .header-title {
+        font-size: 36px;
+    }
+
+    .header-subtitle {
+        font-size: 20px;
+    }
+
+    .intro-section {
+        margin-bottom: 32px;
+    }
+
+    .intro-title {
+        font-size: 32px;
+        margin-bottom: 32px;
+    }
+
+    .intro-text {
+        font-size: 20px;
+        max-width: 358px;
+    }
+
+    .team-section {
+        margin: 0 20px;
+        padding: 62px 20px 80px;
+    }
+
+    .team-heading {
+        font-size: 20px;
+        text-align: center;
+        margin-bottom: 56px;
+    }
+
+    .team-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .team-member {
+        max-width: 300px;
+    }
+}
