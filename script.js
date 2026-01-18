@@ -48,7 +48,7 @@ function createTeamMemberCard(member) {
     imageContainer.appendChild(source);
 
     const img = document.createElement('img');
-    img.src = member.image;
+    img.src = member.fallback;
     img.alt = member.name;
     img.className = 'member-image';
     imageContainer.appendChild(img);
