@@ -151,7 +151,7 @@ body {
     font-family: 'DM Mono', monospace;
     font-weight: 500;
     font-size: 16px;
-    color: #0f1427;
+    color: #0a66c2;
     cursor: pointer;
     position: relative;
     display: inline-block;
@@ -221,19 +221,17 @@ body {
 
 /* Responsive */
 
-@media (max-width: 1280px) {
-    .team-section {
-        margin: 0 30px;
-        padding: 50px 50px 80px;
-    }
+.team-section {
+    margin: 0 30px;
+    padding: 50px 50px 80px;
+}
 
-    .team-grid {
-        gap: 35px;
-    }
+.team-grid {
+    gap: 35px;
 }
 
 /* LARGE */
-@media (930px <=width < 1024px) {
+@media (930px <= width) {
     .header {
         padding: 33px 30px 32px;
     }
@@ -291,7 +289,7 @@ body {
 }
 
 /* MOBILE */
-@media (max-width: 640px) {
+@media (width < 640px) {
     .header {
         padding: 55px 20px 32px;
     }
