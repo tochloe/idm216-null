@@ -12,7 +12,7 @@ const teamData = [
         primaryRole: "Primary Data Architect",
         secondaryRole: "Secondary Project Manager",
         image: "images/jeremy_senh.avif",
-        fallback: "images/jeremy_senh_cropped.png",
+        fallback: "images/jeremy_senh.jpg",
         linkedin: "https://www.linkedin.com/in/jeremy-senh/"
     },
     {
@@ -29,7 +29,7 @@ const teamData = [
         primaryRole: "Primary Project Manager",
         secondaryRole: "Secondary Designer",
         image: "images/chloe_to.avif",
-        fallback: "images/chloe_to.png",
+        fallback: "images/chloe_to.jpg",
         linkedin: "https://www.linkedin.com/in/chloe--to"
     }
 ];
