@@ -237,7 +237,7 @@ body {
     }
 
     .header-title {
-        font-size: 32px;
+        font-size: 36px;
     }
 
     .header-subtitle {
@@ -245,7 +245,7 @@ body {
     }
 
     .intro-title {
-        font-size: 36px;
+        font-size: 30px;
         margin-bottom: 48px;
     }
 
@@ -268,7 +268,7 @@ body {
     }
 
     .member-name {
-        font-size: 22px;
+        font-size: 18px;
     }
 
     .member-role {
@@ -285,6 +285,15 @@ body {
 
     .team-member {
         max-width: 100%;
+    }
+
+    .header-title {
+        font-size: 36px;
+    }
+
+    .intro-title {
+        font-size: 32px;
+        margin-bottom: 32px;
     }
 }
 
@@ -307,7 +316,7 @@ body {
     }
 
     .intro-title {
-        font-size: 32px;
+        font-size: 30px;
         margin-bottom: 32px;
     }
 
