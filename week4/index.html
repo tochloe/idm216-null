@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Page</title>
+
+    <!-- Fetch Open Sans from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <table>
+        <caption>Products</caption>
+        <thead>
+            <tr>
+                <th>Portion</th>
+                <th>Small</th>
+                <th>Medium</th>
+                <th>Large</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Custom Smoothie</td>
+                <td>$4.00</td>
+                <td>$5.00</td>
+                <td>$6.00</td>
+            </tr>
+            <tr>
+                <td>Fruit Salad</td>
+                <td>$4.00</td>
+                <td class="blank">Unavailable</td>
+                <td>$6.00</td>
+            </tr>
+            <tr>
+                <td>Peanut Butter & Banana Smoothie</td>
+                <td>$4.00</td>
+                <td>$5.00</td>
+                <td>$6.00</td>
+            </tr>
+            <tr>
+                <td>Taro Smoothie</td>
+                <td>$4.50</td>
+                <td>$5.50</td>
+                <td>$6.50</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --ibm-green-70: #0e6027;
+            --ibm-gray-10: #f4f4f4;
+            --ibm-gray-20: #e0e0e0;
+            --ibm-gray-60: #6f6f6f;
+            --ibm-gray-100: #161616;
+        }
+
+        html, body {
+            height: 100dvh;
+            width: max(375px, 100vw);
+        }
+
+        body {
+            align-items: center;
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: center;
+        }
+
+        body * {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        caption {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0.5rem;
+        }
+
+        tbody tr:nth-child(odd) td {
+            background-color: var(--ibm-gray-10);
+        }
+
+        tbody tr:nth-child(even) td {
+            background-color: var(--ibm-gray-20);
+        }
+
+        th, td {
+            padding: 0.5rem 0.875rem;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--ibm-green-70);
+            color: var(--ibm-gray-10);
+            font-size: 1.25rem;
+            font-weight: 550;
+        }
+
+        td.blank {
+            background-color: var(--ibm-gray-60) !important;
+            color: var(--ibm-gray-10);
+        }
+    </style>
+</body>
+</html>
