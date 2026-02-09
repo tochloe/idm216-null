@@ -11,6 +11,15 @@ let currentSmoothie = {
   image: './img/smoothie.avif'
 };
 
+// Checkout state
+let checkoutState = {
+  pickupTime: 'asap',
+  pickupName: '',
+  paymentMethod: 'credit',
+  tipPercentage: 20,
+  customTip: 0
+};
+
 // Smoothie data
 const smoothieData = {
   'Custom Smoothie': {
@@ -35,18 +44,23 @@ const smoothieData = {
 const screens = {
   home: document.getElementById('homeScreen'),
   customize: document.getElementById('customizeScreen'),
-  bag: document.getElementById('bagScreen')
+  bag: document.getElementById('bagScreen'),
+  checkout: document.getElementById('checkoutScreen'),
+  confirmation: document.getElementById('confirmationScreen')
 };
 
 const bagBtn = document.getElementById('bagBtn');
 const backBtn = document.getElementById('backBtn');
 const backFromBagBtn = document.getElementById('backFromBagBtn');
+const backFromCheckoutBtn = document.getElementById('backFromCheckoutBtn');
 const cartBadge = document.getElementById('cartBadge');
 const navBtns = document.querySelectorAll('.nav-btn');
 const smoothieCards = document.querySelectorAll('.smoothie-card');
 const addToBagBtn = document.getElementById('addToBagBtn');
 const startShoppingBtn = document.getElementById('startShoppingBtn');
 const checkoutBtn = document.getElementById('checkoutBtn');
+const placeOrderBtn = document.getElementById('placeOrderBtn');
+const returnHomeBtn = document.getElementById('returnHomeBtn');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -113,9 +127,36 @@ function initializeEventListeners() {
   // Checkout
   if (checkoutBtn) {
     checkoutBtn.addEventListener('click', () => {
-      showToast('Success', 'Proceeding to checkout...', 'success');
+      navigateTo('checkout');
+      renderCheckoutScreen();
     });
   }
+
+  // Place Order
+  if (placeOrderBtn) {
+    placeOrderBtn.addEventListener('click', () => {
+      placeOrder();
+    });
+  }
+
+  // Return Home
+  if (returnHomeBtn) {
+    returnHomeBtn.addEventListener('click', () => {
+      cartItems = [];
+      updateCartBadge();
+      navigateTo('home');
+    });
+  }
+
+  // Back from Checkout
+  if (backFromCheckoutBtn) {
+    backFromCheckoutBtn.addEventListener('click', () => {
+      navigateTo('bag');
+    });
+  }
+
+  // Checkout option selections
+  initializeCheckoutListeners();
 }
 
 // Navigation
@@ -311,6 +352,129 @@ function renderCartItems() {
   // updating total
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   document.getElementById('subtotalAmount').textContent = `$${subtotal.toFixed(2)}`;
+}
+
+// Checkout Functions
+function initializeCheckoutListeners() {
+  // Pickup time options
+  document.querySelectorAll('.pickup-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.pickup-option').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      checkoutState.pickupTime = btn.dataset.pickup;
+    });
+  });
+
+  // Payment method options
+  document.querySelectorAll('.payment-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.payment-option').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      checkoutState.paymentMethod = btn.dataset.payment;
+    });
+  });
+
+  // Tip buttons
+  document.querySelectorAll('.tip-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const tipValue = btn.dataset.tip;
+      if (tipValue === 'custom') {
+        checkoutState.tipPercentage = 0;
+        checkoutState.customTip = 1.00; // Default custom tip
+      } else {
+        checkoutState.tipPercentage = parseInt(tipValue);
+        checkoutState.customTip = 0;
+      }
+      updateCheckoutTotals();
+    });
+  });
+
+  // Pickup name input
+  const pickupNameInput = document.getElementById('pickupName');
+  if (pickupNameInput) {
+    pickupNameInput.addEventListener('input', (e) => {
+      checkoutState.pickupName = e.target.value;
+    });
+  }
+}
+
+function renderCheckoutScreen() {
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const tax = subtotal * 0.08; // 8% tax
+  const tipAmount = checkoutState.customTip || (subtotal * (checkoutState.tipPercentage / 100));
+  const totalAmount = subtotal + tax + tipAmount;
+
+  // Render order items
+  const orderItemsContainer = document.getElementById('checkoutOrderItems');
+  orderItemsContainer.innerHTML = cartItems.map(item => `
+    <div class="order-item">
+      <div class="order-item-header">
+        <span>${item.quantity}x ${item.name}</span>
+        <span>$${(item.price * item.quantity).toFixed(2)}</span>
+      </div>
+      <div class="order-item-details">${item.size}, ${item.ingredients.join(', ')}</div>
+    </div>
+  `).join('');
+
+  // Update totals
+  document.getElementById('checkoutSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+  document.getElementById('checkoutTax').textContent = `$${tax.toFixed(2)}`;
+  document.getElementById('checkoutTip').textContent = `$${tipAmount.toFixed(2)}`;
+  document.getElementById('checkoutTotal').textContent = `$${totalAmount.toFixed(2)}`;
+}
+
+function updateCheckoutTotals() {
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const tax = subtotal * 0.08;
+  const tipAmount = checkoutState.customTip || (subtotal * (checkoutState.tipPercentage / 100));
+  const totalAmount = subtotal + tax + tipAmount;
+
+  document.getElementById('checkoutTip').textContent = `$${tipAmount.toFixed(2)}`;
+  document.getElementById('checkoutTotal').textContent = `$${totalAmount.toFixed(2)}`;
+}
+
+function placeOrder() {
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const tax = subtotal * 0.08;
+  const tipAmount = checkoutState.customTip || (subtotal * (checkoutState.tipPercentage / 100));
+  const totalAmount = subtotal + tax + tipAmount;
+
+  // Calculate pickup time (15 minutes from now)
+  const now = new Date();
+  now.setMinutes(now.getMinutes() + 15);
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  const pickupTimeStr = `${displayHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+
+  // Render confirmation screen
+  document.getElementById('pickupTime').textContent = pickupTimeStr;
+  document.getElementById('orderNumber').textContent = Math.floor(Math.random() * 100) + 1;
+
+  const confirmOrderItems = document.getElementById('confirmationOrderItems');
+  confirmOrderItems.innerHTML = cartItems.map(item => `
+    <div class="order-item">
+      <div class="order-item-header">
+        <span>${item.quantity}x ${item.name}</span>
+        <span>$${(item.price * item.quantity).toFixed(2)}</span>
+      </div>
+      <div class="order-item-details">${item.size}, ${item.ingredients.join(', ')}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('confirmSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+  document.getElementById('confirmTax').textContent = `$${tax.toFixed(2)}`;
+  document.getElementById('confirmTip').textContent = `$${tipAmount.toFixed(2)}`;
+  document.getElementById('confirmTotal').textContent = `$${totalAmount.toFixed(2)}`;
+
+  showToast('Order Placed', 'Your order has been placed successfully!', 'success');
+  
+  setTimeout(() => {
+    navigateTo('confirmation');
+  }, 500);
 }
 
 // pop-ups

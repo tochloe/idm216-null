@@ -65,7 +65,7 @@
               <h3 class="smoothie-name">Custom<br>Fruit Salad</h3>
             </div>
 
-            <!-- pb banana smmothie -->
+            <!-- pb banana smoothie -->
             <div class="smoothie-card" data-smoothie="P.B. Banana">
               <div class="card-bg"></div>
               <img src="./img/pb_banana.avif" alt="P.B. Banana" class="smoothie-image">
@@ -94,7 +94,7 @@
           <h2 id="customizeTitle" class="screen-title">Custom Smoothie</h2>
 
           <div class="customize-image">
-            <img id="customizeImage" src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?w=400" alt="Smoothie">
+            <img id="customizeImage" src="./img/smoothie.avif" alt="Smoothie">
           </div>
 
           <!-- Size Selection -->
@@ -182,7 +182,7 @@
 
           <button id="addToBagBtn" class="add-to-bag-btn">
             <span id="addToBagText">Add to Bag</span>
-            <span id="addToBagPrice">$7.99</span>
+            <span id="addToBagPrice">$5.50</span>
           </button>
         </div>
       </div>
@@ -216,6 +216,168 @@
               Proceed to Checkout
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- Checkout Screen -->
+      <div id="checkoutScreen" class="screen">
+        <button id="backFromCheckoutBtn" class="back-btn">
+          <svg viewBox="0 0 36 36" fill="none">
+            <path d="M22.5 9L13.5 18L22.5 27" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </button>
+
+        <div class="checkout-content">
+          <h2 class="screen-title">Checkout</h2>
+
+          <!-- Pick-Up Time -->
+          <div class="section">
+            <h3 class="section-title">Pick-Up Time</h3>
+            <button class="pickup-option active" data-pickup="asap">
+              <span>ASAP (10-15 Minutes)</span>
+              <div class="radio-btn">
+                <div class="radio-dot"></div>
+              </div>
+            </button>
+            <button class="pickup-option" data-pickup="scheduled">
+              <span>Schedule Ahead</span>
+              <div class="radio-btn">
+                <div class="radio-dot"></div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Pick-up Name -->
+          <div class="section">
+            <h3 class="section-subtitle">Pick-up Name</h3>
+            <input type="text" id="pickupName" class="text-input" placeholder="Name" value="">
+          </div>
+
+          <!-- Payment Method -->
+          <div class="section">
+            <h3 class="section-title">Payment Method</h3>
+            <button class="payment-option active" data-payment="credit">
+              <div class="payment-left">
+                <svg class="payment-icon" viewBox="0 0 36 24" fill="none">
+                  <path d="M3 0C1.34315 0 0 1.34315 0 3V21C0 22.6569 1.34315 24 3 24H33C34.6569 24 36 22.6569 36 21V3C36 1.34315 34.6569 0 33 0H3ZM0 6H36V8H0V6ZM4 14H12V16H4V14Z" fill="#1A1A1A"/>
+                </svg>
+                <span>Credit</span>
+              </div>
+              <div class="radio-btn">
+                <div class="radio-dot"></div>
+              </div>
+            </button>
+            <button class="payment-option" data-payment="apple">
+              <div class="payment-left">
+                <span class="payment-icon apple-icon">
+                  <svg viewBox="0 0 18 22" fill="none">
+                    <path d="M17.23 18.27C16.89 19.09 16.48 19.84 16 20.52C15.32 21.48 14.77 22.13 14.36 22.46C13.69 23.05 12.97 23.35 12.19 23.36C11.64 23.36 10.97 23.2 10.19 22.87C9.4 22.55 8.68 22.39 8.02 22.39C7.33 22.39 6.59 22.55 5.8 22.87C5.01 23.2 4.37 23.37 3.88 23.38C3.13 23.4 2.4 23.09 1.69 22.46C1.24 22.09 0.66 21.42 0 20.45C-0.71 19.4 -1.28 18.18 -1.72 16.79C-2.19 15.26 -2.43 13.79 -2.43 12.38C-2.43 10.76 -2.11 9.36 -1.47 8.19C-0.97 7.27 -0.29 6.55 0.57 6.02C1.43 5.49 2.38 5.22 3.42 5.21C4 5.21 4.75 5.39 5.67 5.74C6.58 6.09 7.17 6.27 7.43 6.27C7.62 6.27 8.28 6.06 9.39 5.64C10.44 5.25 11.34 5.09 12.08 5.15C14.03 5.3 15.5 6.07 16.47 7.47C14.77 8.54 13.93 10.02 13.95 11.92C13.97 13.42 14.5 14.68 15.54 15.68C16.01 16.15 16.54 16.51 17.14 16.77C17.01 17.15 16.87 17.51 16.72 17.86L17.23 18.27Z" fill="#1A1A1A" transform="translate(0 -3)"/>
+                  </svg>
+                </span>
+                <span>Apple Pay</span>
+              </div>
+              <div class="radio-btn">
+                <div class="radio-dot"></div>
+              </div>
+            </button>
+            <button class="payment-option" data-payment="venmo">
+              <div class="payment-left">
+                <div class="payment-icon venmo-icon">
+                  <span>V</span>
+                </div>
+                <span>Venmo</span>
+              </div>
+              <div class="radio-btn">
+                <div class="radio-dot"></div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Tip -->
+          <div class="section">
+            <h3 class="section-title">Leave a tip for KC!</h3>
+            <div class="tip-options">
+              <button class="tip-btn" data-tip="custom">Custom</button>
+              <button class="tip-btn" data-tip="15">15%</button>
+              <button class="tip-btn active" data-tip="20">20%</button>
+            </div>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="section">
+            <h3 class="section-title">Order Summary</h3>
+            <div id="checkoutOrderItems" class="checkout-order-items">
+              <!-- Order items will be inserted here -->
+            </div>
+            <div class="divider"></div>
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="checkoutSubtotal">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Tax</span>
+              <span id="checkoutTax">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Tip</span>
+              <span id="checkoutTip">$0.00</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Total</span>
+              <span id="checkoutTotal">$0.00</span>
+            </div>
+          </div>
+
+          <button id="placeOrderBtn" class="place-order-btn">
+            Place Order
+          </button>
+        </div>
+      </div>
+
+      <!-- Confirmation Screen -->
+      <div id="confirmationScreen" class="screen">
+        <div class="confirmation-content">
+          <h2 class="confirmation-title">Order #<span id="orderNumber">43</span> Confirmed!</h2>
+
+          <div class="pickup-clock">
+            <div class="clock-inner">
+              <p class="clock-label">Pick-up Time</p>
+              <p class="clock-time" id="pickupTime">12:40 PM</p>
+            </div>
+            <!-- Decorative fruits -->
+            <img src="./img/fruit_decor_1.avif" alt="raspberry" class="fruit-decor fruit-1">
+            <img src="./img/fruit_decor_2.avif" alt="banana" class="fruit-decor fruit-2">
+            <img src="./img/fruit_decor_3.avif" alt="strawberry" class="fruit-decor fruit-3">
+            <img src="./img/fruit_decor_4.avif" alt="blueberry" class="fruit-decor fruit-4">
+          </div>
+
+          <div class="confirmation-summary">
+            <h3 class="section-title">Order Summary</h3>
+            <div id="confirmationOrderItems" class="confirmation-order-items">
+              <!-- Order items will be inserted here -->
+            </div>
+            <div class="divider"></div>
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="confirmSubtotal">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Tax</span>
+              <span id="confirmTax">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Tip</span>
+              <span id="confirmTip">$0.00</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Total</span>
+              <span id="confirmTotal">$0.00</span>
+            </div>
+          </div>
+
+          <button id="returnHomeBtn" class="return-home-btn">
+            Return to Home
+          </button>
         </div>
       </div>
     </main>
