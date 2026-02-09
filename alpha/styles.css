@@ -74,9 +74,6 @@ html{
   transition: transform 0.2s;
 }
 
-.icon-btn:hover {
-  transform: scale(1.1);
-}
 
 .icon-btn:active {
   transform: scale(0.9);
@@ -278,9 +275,6 @@ html{
   transition: transform 0.2s;
 }
 
-.back-btn:hover {
-  transform: scale(1.1);
-}
 
 .back-btn svg {
   width: 100%;
@@ -352,10 +346,6 @@ html{
   transition: all 0.2s;
 }
 
-.size-btn:hover {
-  border-color: #ffb7b7;
-  transform: scale(1.05);
-}
 
 .size-btn.active {
   border-color: var(--dragonfruit);
@@ -438,10 +428,6 @@ html{
   box-shadow: 0 4px 12px rgba(221, 51, 91, 0.3);
 }
 
-.add-to-bag-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(221, 51, 91, 0.4);
-}
 
 .add-to-bag-btn:active {
   transform: scale(0.95);
@@ -536,10 +522,6 @@ html{
   transition: all 0.2s;
 }
 
-.quantity-btn:hover {
-  background: var(--dragonfruit);
-  color: white;
-}
 
 .quantity-value {
   font-size: 16px;
@@ -580,10 +562,6 @@ html{
     box-shadow 0.2s ease;
 }
 
-.step-btn:hover {
-  background-color: var(--dark-dragonfruit);
-  transform: scale(1.1);
-}
 
 .step-btn:active {
   transform: scale(0.9);
@@ -632,10 +610,6 @@ html{
   transition: all 0.2s;
 }
 
-.item-action-btn:hover {
-  border-color: #dd335b;
-  color: #dd335b;
-}
 
 .empty-cart {
   text-align: center;
@@ -660,10 +634,6 @@ html{
   transition: all 0.2s;
 }
 
-.secondary-btn:hover {
-  background: #dd335b;
-  color: white;
-}
 
 .cart-summary {
   position: fixed;
@@ -705,10 +675,6 @@ html{
   transition: all 0.2s;
 }
 
-.checkout-btn:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 16px rgba(221, 51, 91, 0.4);
-}
 
 /* Checkout Screen */
 .checkout-content {
@@ -733,9 +699,6 @@ html{
   transition: all 0.2s;
 }
 
-.pickup-option:hover {
-  background: var(--off-white);
-}
 
 .pickup-option.active {
   background: var(--off-white);
@@ -799,9 +762,6 @@ html{
   transition: all 0.2s;
 }
 
-.payment-option:hover {
-  background: var(--off-white);
-}
 
 .payment-option.active {
   background: var(--off-white);
@@ -864,9 +824,6 @@ html{
   transition: all 0.2s;
 }
 
-.tip-btn:hover {
-  background: var(--off-white);
-}
 
 .tip-btn.active {
   background: var(--dragonfruit);
@@ -922,10 +879,6 @@ html{
   transition: all 0.2s;
 }
 
-.place-order-btn:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 16px rgba(221, 51, 91, 0.4);
-}
 
 /* Confirmation Screen */
 .confirmation-content {
@@ -1031,10 +984,6 @@ html{
   transition: all 0.2s;
 }
 
-.return-home-btn:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 16px rgba(221, 51, 91, 0.4);
-}
 
 /* Bottom Navigation */
 .bottom-nav {
@@ -1073,9 +1022,6 @@ html{
   transition: all 0.2s;
 }
 
-.nav-btn:hover {
-  transform: scale(1.05);
-}
 
 .nav-btn.active {
   color: #dd335b;
@@ -1177,8 +1123,4 @@ html{
 ::-webkit-scrollbar-thumb {
   background: #dd335b;
   border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #c02a4e;
 }
