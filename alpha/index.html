@@ -121,12 +121,12 @@
             <h3 class="section-title">Ingredients</h3>
             <div class="checkbox-grid">
               <label class="checkbox-label">
-                <input type="checkbox" class="ingredient-checkbox" value="Strawberry" checked>
+                <input type="checkbox" class="ingredient-checkbox" value="Strawberry">
                 <span class="checkbox-custom"></span>
                 <span>Strawberry</span>
               </label>
               <label class="checkbox-label">
-                <input type="checkbox" class="ingredient-checkbox" value="Banana" checked>
+                <input type="checkbox" class="ingredient-checkbox" value="Banana">
                 <span class="checkbox-custom"></span>
                 <span>Banana</span>
               </label>
@@ -149,6 +149,11 @@
                 <input type="checkbox" class="ingredient-checkbox" value="Spinach">
                 <span class="checkbox-custom"></span>
                 <span>Spinach</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-checkbox" value="Taro">
+                <span class="checkbox-custom"></span>
+                <span>Taro</span>
               </label>
             </div>
           </div>
@@ -230,8 +235,8 @@
         <div class="checkout-content">
           <h2 class="screen-title">Checkout</h2>
 
-          <!-- Pick-Up Time -->
-          <div class="section">
+         
+           <div class="section">
             <h3 class="section-title">Pick-Up Time</h3>
             <button class="pickup-option active" data-pickup="asap">
               <span>ASAP (10-15 Minutes)</span>
@@ -245,6 +250,14 @@
                 <div class="radio-dot"></div>
               </div>
             </button>
+            
+            <!-- Time Picker Dropdown (hidden by default) -->
+            <div id="timePickerDropdown" class="time-picker-dropdown hidden">
+              <label for="scheduledTime" class="time-picker-label">Select pickup time:</label>
+              <select id="scheduledTime" class="time-picker-select">
+                <!-- Time options will be populated by JavaScript -->
+              </select>
+            </div>
           </div>
 
           <!-- Pick-up Name -->

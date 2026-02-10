@@ -13,6 +13,10 @@ body {
   align-items: center;
 }
 
+button {
+  font-family: 'Nunito', sans-serif;
+}
+
 html{
     --dragonfruit: #dd335b;
     --dark-dragonfruit: #c02a4e;
@@ -73,7 +77,6 @@ html{
   justify-content: center;
   transition: transform 0.2s;
 }
-
 
 .icon-btn:active {
   transform: scale(0.9);
@@ -230,7 +233,6 @@ html{
   transition: transform 0.2s;
 }
 
-
 .smoothie-card:active {
   transform: scale(0.95);
 }
@@ -274,7 +276,6 @@ html{
   z-index: 101;
   transition: transform 0.2s;
 }
-
 
 .back-btn svg {
   width: 100%;
@@ -346,7 +347,6 @@ html{
   transition: all 0.2s;
 }
 
-
 .size-btn.active {
   border-color: var(--dragonfruit);
   background-color: var(--off-white);
@@ -407,10 +407,9 @@ html{
 }
 
 .add-to-bag-btn {
-  position: fixed;
-  bottom: 80px;
-  left: 24px;
-  right: 24px;
+  position: sticky;
+  bottom: 100px;
+  width: calc(100% - 48px);
   max-width: 382px;
   margin: 0 auto;
   background-color: var(--dragonfruit);
@@ -424,10 +423,19 @@ html{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.2s;
+  transition: all 0.3s;
   box-shadow: 0 4px 12px rgba(221, 51, 91, 0.3);
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
 }
 
+.add-to-bag-btn.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
 
 .add-to-bag-btn:active {
   transform: scale(0.95);
@@ -522,7 +530,6 @@ html{
   transition: all 0.2s;
 }
 
-
 .quantity-value {
   font-size: 16px;
   font-weight: 700;
@@ -561,7 +568,6 @@ html{
     background-color 0.2s ease,
     box-shadow 0.2s ease;
 }
-
 
 .step-btn:active {
   transform: scale(0.9);
@@ -610,7 +616,6 @@ html{
   transition: all 0.2s;
 }
 
-
 .empty-cart {
   text-align: center;
   padding: 60px 20px;
@@ -634,12 +639,10 @@ html{
   transition: all 0.2s;
 }
 
-
 .cart-summary {
-  position: fixed;
+  position: sticky;
   bottom: 100px;
-  left: 24px;
-  right: 24px;
+  width: calc(100% - 48px);
   max-width: 382px;
   margin: 0 auto;
   background: white;
@@ -647,6 +650,17 @@ html{
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: all 0.3s;
+}
+
+.cart-summary.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
 }
 
 .cart-summary.hidden {
@@ -675,7 +689,6 @@ html{
   transition: all 0.2s;
 }
 
-
 /* Checkout Screen */
 .checkout-content {
   padding: 24px;
@@ -698,7 +711,6 @@ html{
   color: #1a1a1a;
   transition: all 0.2s;
 }
-
 
 .pickup-option.active {
   background: var(--off-white);
@@ -728,6 +740,48 @@ html{
 .pickup-option.active .radio-dot,
 .payment-option.active .radio-dot {
   background: var(--dragonfruit);
+}
+
+.time-picker-dropdown {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--off-white);
+  border: 1px solid var(--dragonfruit);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.time-picker-dropdown.hidden {
+  display: none;
+}
+
+.time-picker-label {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.time-picker-select {
+  width: 100%;
+  height: 48px;
+  border: 1px solid var(--dragonfruit);
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  background: white;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  transition: border-color 0.2s;
+}
+
+.time-picker-select:focus {
+  outline: none;
+  border-color: var(--dark-dragonfruit);
+  border-width: 2px;
 }
 
 .text-input {
@@ -761,7 +815,6 @@ html{
   margin-bottom: 12px;
   transition: all 0.2s;
 }
-
 
 .payment-option.active {
   background: var(--off-white);
@@ -824,7 +877,6 @@ html{
   transition: all 0.2s;
 }
 
-
 .tip-btn.active {
   background: var(--dragonfruit);
   color: white;
@@ -878,7 +930,6 @@ html{
   margin-top: 24px;
   transition: all 0.2s;
 }
-
 
 /* Confirmation Screen */
 .confirmation-content {
@@ -984,7 +1035,6 @@ html{
   transition: all 0.2s;
 }
 
-
 /* Bottom Navigation */
 .bottom-nav {
   position: absolute;
@@ -1021,7 +1071,6 @@ html{
   color: #1a1a1a;
   transition: all 0.2s;
 }
-
 
 .nav-btn.active {
   color: #dd335b;
@@ -1121,6 +1170,10 @@ html{
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #dd335b;
+  background: var(--dragonfruit);
   border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c02a4e;
 }

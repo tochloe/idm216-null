@@ -11,24 +11,25 @@ let currentSmoothie = {
   image: './img/smoothie.avif'
 };
 
-// Checkout state
+// checkout state
 let checkoutState = {
   pickupTime: 'asap',
+  scheduledTime: null,
   pickupName: '',
   paymentMethod: 'credit',
   tipPercentage: 20,
   customTip: 0
 };
 
-// Smoothie data
+// SMOOTHIE INFO
 const smoothieData = {
   'Custom Smoothie': {
     image: './img/smoothie.avif',
-    defaultIngredients: ['Strawberry', 'Banana']
+    defaultIngredients: []
   },
   'Fruit Salad': {
     image: './img/fruit_salad.avif',
-    defaultIngredients: ['Strawberry', 'Banana', 'Mango', 'Blueberry']
+    defaultIngredients: []
   },
   'P.B. Banana': {
     image: './img/pb_banana.avif',
@@ -66,7 +67,43 @@ const returnHomeBtn = document.getElementById('returnHomeBtn');
 document.addEventListener('DOMContentLoaded', () => {
   initializeEventListeners();
   updateCartBadge();
+  initializeScrollHandlers();
 });
+
+// Scroll handlers for sticky buttons
+function initializeScrollHandlers() {
+  const customizeScreen = document.getElementById('customizeScreen');
+  const bagScreen = document.getElementById('bagScreen');
+  const addToBagBtn = document.getElementById('addToBagBtn');
+  const cartSummary = document.getElementById('cartSummary');
+
+
+  customizeScreen.addEventListener('scroll', () => {
+    const scrollTop = customizeScreen.scrollTop;
+    const scrollHeight = customizeScreen.scrollHeight;
+    const clientHeight = customizeScreen.clientHeight;
+    
+    // button when scrolled down at least 200px or near bottom
+    if (scrollTop > 200 || (scrollHeight - scrollTop - clientHeight) < 100) {
+      addToBagBtn.classList.add('show');
+    } else {
+      addToBagBtn.classList.remove('show');
+    }
+  });
+
+  bagScreen.addEventListener('scroll', () => {
+    const scrollTop = bagScreen.scrollTop;
+    const scrollHeight = bagScreen.scrollHeight;
+    const clientHeight = bagScreen.clientHeight;
+    
+    // Show button when scrolled down at least 200px or near bottom
+    if (scrollTop > 200 || (scrollHeight - scrollTop - clientHeight) < 100) {
+      cartSummary.classList.add('show');
+    } else {
+      cartSummary.classList.remove('show');
+    }
+  });
+}
 
 // Event Listeners
 function initializeEventListeners() {
@@ -104,14 +141,14 @@ function initializeEventListeners() {
     });
   });
 
-  // Ingredient checkboxes
+  // checkboxes
   document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
     checkbox.addEventListener('change', () => {
       updateIngredients();
     });
   });
 
-  // Add-on checkboxes
+  
   document.querySelectorAll('.addon-checkbox').forEach(checkbox => {
     checkbox.addEventListener('change', () => {
       updateAddOns();
@@ -119,12 +156,12 @@ function initializeEventListeners() {
     });
   });
 
-  // Add to bag
+  // add to bag
   addToBagBtn.addEventListener('click', () => {
     addToCart();
   });
 
-  // Checkout
+  // checkot
   if (checkoutBtn) {
     checkoutBtn.addEventListener('click', () => {
       navigateTo('checkout');
@@ -164,7 +201,6 @@ function navigateTo(screen) {
   // Remove active class from all screens
   Object.values(screens).forEach(s => s.classList.remove('active'));
   
-  // Add active class to target screen
   screens[screen].classList.add('active');
   currentScreen = screen;
 
@@ -176,9 +212,19 @@ function navigateTo(screen) {
     }
   });
 
-  // Update bag screen when navigating to it
+  // Reset scroll position and button visibility
+  if (screen === 'customize') {
+    screens.customize.scrollTop = 0;
+    addToBagBtn.classList.remove('show');
+  }
+  
   if (screen === 'bag') {
     renderCartItems();
+    screens.bag.scrollTop = 0;
+    const cartSummary = document.getElementById('cartSummary');
+    if (!cartSummary.classList.contains('hidden')) {
+      cartSummary.classList.remove('show');
+    }
   }
 }
 
@@ -356,14 +402,34 @@ function renderCartItems() {
 
 // Checkout Functions
 function initializeCheckoutListeners() {
+  // Populate time picker options
+  populateTimeOptions();
+
   // Pickup time options
   document.querySelectorAll('.pickup-option').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.pickup-option').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       checkoutState.pickupTime = btn.dataset.pickup;
+      
+      // Show/hide time picker dropdown
+      const timePickerDropdown = document.getElementById('timePickerDropdown');
+      if (checkoutState.pickupTime === 'scheduled') {
+        timePickerDropdown.classList.remove('hidden');
+      } else {
+        timePickerDropdown.classList.add('hidden');
+        checkoutState.scheduledTime = null;
+      }
     });
   });
+
+  // Scheduled time select
+  const scheduledTimeSelect = document.getElementById('scheduledTime');
+  if (scheduledTimeSelect) {
+    scheduledTimeSelect.addEventListener('change', (e) => {
+      checkoutState.scheduledTime = e.target.value;
+    });
+  }
 
   // Payment method options
   document.querySelectorAll('.payment-option').forEach(btn => {
@@ -391,12 +457,66 @@ function initializeCheckoutListeners() {
     });
   });
 
-  // Pickup name input
+  // name input
   const pickupNameInput = document.getElementById('pickupName');
   if (pickupNameInput) {
     pickupNameInput.addEventListener('input', (e) => {
       checkoutState.pickupName = e.target.value;
     });
+  }
+}
+
+function populateTimeOptions() {
+  const select = document.getElementById('scheduledTime');
+  if (!select) return;
+
+  // current time
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  
+  let startTime = new Date(now);
+  startTime.setMinutes(currentMinute + 30);
+  
+  // round by 30 minutes
+  const minutes = startTime.getMinutes();
+  const roundedMinutes = minutes <= 30 ? 30 : 60;
+  startTime.setMinutes(roundedMinutes);
+  if (roundedMinutes === 60) {
+    startTime.setHours(startTime.getHours() + 1);
+    startTime.setMinutes(0);
+  }
+  
+  // check when they close i think its at 5
+  const endHour = 17;
+  
+  // Clear existing options
+  select.innerHTML = '';
+  
+  let currentTime = new Date(startTime);
+  
+  while (currentTime.getHours() < endHour || (currentTime.getHours() === endHour && currentTime.getMinutes() === 0)) {
+    const hours = currentTime.getHours();
+    const minutes = currentTime.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+    const displayMinutes = minutes.toString().padStart(2, '0');
+    
+    const timeString = `${displayHours}:${displayMinutes} ${ampm}`;
+    const option = document.createElement('option');
+    option.value = timeString;
+    option.textContent = timeString;
+    select.appendChild(option);
+    
+    // increments of 30
+    currentTime.setMinutes(currentTime.getMinutes() + 30);
+    
+    // end at 5 i think.. i need to check when they close
+    if (currentTime.getHours() > endHour) break;
+  }
+
+  if (select.options.length > 0) {
+    checkoutState.scheduledTime = select.options[0].value;
   }
 }
 
@@ -418,7 +538,7 @@ function renderCheckoutScreen() {
     </div>
   `).join('');
 
-  // Update totals
+  // totals update
   document.getElementById('checkoutSubtotal').textContent = `$${subtotal.toFixed(2)}`;
   document.getElementById('checkoutTax').textContent = `$${tax.toFixed(2)}`;
   document.getElementById('checkoutTip').textContent = `$${tipAmount.toFixed(2)}`;
@@ -441,14 +561,20 @@ function placeOrder() {
   const tipAmount = checkoutState.customTip || (subtotal * (checkoutState.tipPercentage / 100));
   const totalAmount = subtotal + tax + tipAmount;
 
-  // Calculate pickup time (15 minutes from now)
-  const now = new Date();
-  now.setMinutes(now.getMinutes() + 15);
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  const displayHours = hours % 12 || 12;
-  const pickupTimeStr = `${displayHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+  //pick up time
+  let pickupTimeStr;
+  if (checkoutState.pickupTime === 'scheduled' && checkoutState.scheduledTime) {
+    pickupTimeStr = checkoutState.scheduledTime;
+  } else {
+    
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 15);
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+    pickupTimeStr = `${displayHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+  }
 
   // Render confirmation screen
   document.getElementById('pickupTime').textContent = pickupTimeStr;
