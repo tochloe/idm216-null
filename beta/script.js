@@ -3,6 +3,7 @@ let currentScreen = 'home';
 let cartItems = [];
 let editingItem = null;
 let navTimeout = null;
+let lastOrder = null; // track last placed order for status banner
 let currentSmoothie = {
   name: 'Custom Smoothie',
   size: 'Medium',
@@ -70,9 +71,68 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCartBadge();
   initializeScrollHandlers();
   injectApplePayModal();
+  initializeOrderStatusBanner();
 });
 
-// Only handle customize screen scroll
+//  Order Status Banner 
+
+function initializeOrderStatusBanner() {
+  const banner = document.getElementById('orderStatusBanner');
+  if (!banner) return;
+
+  banner.addEventListener('click', () => {
+    if (lastOrder) showConfirmationScreen(lastOrder);
+  });
+
+  banner.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (lastOrder) showConfirmationScreen(lastOrder);
+    }
+  });
+}
+
+function showOrderStatusBanner(orderData) {
+  const banner = document.getElementById('orderStatusBanner');
+  const text = document.getElementById('orderStatusText');
+  if (!banner || !text) return;
+
+  lastOrder = orderData;
+  text.textContent = `Order #${orderData.orderNumber} — picking up at ${orderData.pickupTime}`;
+  banner.classList.add('visible');
+}
+
+function hideOrderStatusBanner() {
+  const banner = document.getElementById('orderStatusBanner');
+  if (banner) banner.classList.remove('visible');
+  lastOrder = null;
+}
+
+// Re-render confirmation screen from saved order data and navigate to it
+function showConfirmationScreen(order) {
+  document.getElementById('pickupTime').textContent = order.pickupTime;
+  document.getElementById('orderNumber').textContent = order.orderNumber;
+
+  document.getElementById('confirmationOrderItems').innerHTML = order.items.map(item => `
+    <div class="order-item">
+      <div class="order-item-header">
+        <span>${item.quantity}x ${item.name}</span>
+        <span>$${(item.price * item.quantity).toFixed(2)}</span>
+      </div>
+      <div class="order-item-details">${item.size}, ${item.ingredients.join(', ')}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('confirmSubtotal').textContent = `$${order.subtotal.toFixed(2)}`;
+  document.getElementById('confirmTax').textContent = `$${order.tax.toFixed(2)}`;
+  document.getElementById('confirmTip').textContent = `$${order.tip.toFixed(2)}`;
+  document.getElementById('confirmTotal').textContent = `$${order.total.toFixed(2)}`;
+
+  navigateTo('confirmation');
+}
+
+//  Scroll Handlers 
+
 function initializeScrollHandlers() {
   const customizeScreen = document.getElementById('customizeScreen');
   const addToBagBtn = document.getElementById('addToBagBtn');
@@ -90,20 +150,14 @@ function initializeScrollHandlers() {
   });
 }
 
-// ─── Apple Pay Modal ────────────────────────────────────────────────────────
+// ─── Apple Pay Modal ─────────────────────────────────────────────────────────
 
 function injectApplePayModal() {
   const modal = document.createElement('div');
   modal.id = 'applePayOverlay';
   modal.innerHTML = `
     <div id="applePaySheet">
-
-      <!-- Lock screen top bar -->
-      <div class="ap-topbar">
-        <div class="ap-notch"></div>
-      </div>
-
-      <!-- Header -->
+      <div class="ap-topbar"><div class="ap-notch"></div></div>
       <div class="ap-header">
         <div class="ap-logo">
           <svg viewBox="0 0 18 22" fill="none" class="ap-apple-icon">
@@ -114,15 +168,11 @@ function injectApplePayModal() {
         <div class="ap-merchant">KC's Fresh Fruit & Smoothies</div>
         <div class="ap-amount" id="apAmount">$0.00</div>
       </div>
-
-      <!-- Card -->
       <div class="ap-card-section">
         <div class="ap-card">
           <div class="ap-card-top">
             <div class="ap-card-bank">Chase</div>
-            <div class="ap-card-chip">
-              <div class="ap-chip-lines"></div>
-            </div>
+            <div class="ap-card-chip"></div>
           </div>
           <div class="ap-card-bottom">
             <div class="ap-card-dots">•••• •••• •••• 4242</div>
@@ -131,34 +181,25 @@ function injectApplePayModal() {
             </svg>
           </div>
         </div>
-        <div class="ap-card-label">Visa ···· 1234</div>
+        <div class="ap-card-label">Visa ···· 4242</div>
       </div>
-
-      <!-- Face ID prompt -->
       <div class="ap-faceid-section" id="apFaceIdSection">
         <div class="ap-faceid-ring" id="apFaceIdRing">
           <div class="ap-faceid-icon" id="apFaceIdIcon">
-            <!-- Face ID brackets -->
             <svg viewBox="0 0 80 80" fill="none" class="ap-faceid-svg">
-              <!-- corners -->
               <path d="M10 25 L10 10 L25 10" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M55 10 L70 10 L70 25" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M70 55 L70 70 L55 70" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M25 70 L10 70 L10 55" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <!-- eyes -->
               <circle cx="29" cy="34" r="3" fill="white"/>
               <circle cx="51" cy="34" r="3" fill="white"/>
-              <!-- nose -->
               <path d="M40 38 L37 46 L43 46" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-              <!-- mouth -->
               <path d="M32 52 Q40 58 48 52" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
             </svg>
           </div>
         </div>
         <p class="ap-faceid-label" id="apFaceIdLabel">Double-click to pay</p>
       </div>
-
-      <!-- Success state (hidden initially) -->
       <div class="ap-success-section hidden" id="apSuccessSection">
         <div class="ap-success-ring">
           <svg viewBox="0 0 60 60" fill="none" class="ap-check-svg">
@@ -168,14 +209,11 @@ function injectApplePayModal() {
         </div>
         <p class="ap-success-label">Done</p>
       </div>
-
-      <!-- Cancel -->
       <button class="ap-cancel-btn" id="apCancelBtn">Cancel</button>
     </div>
   `;
 
   document.body.appendChild(modal);
-
   document.getElementById('apCancelBtn').addEventListener('click', closeApplePaySheet);
   modal.addEventListener('click', (e) => {
     if (e.target === modal) closeApplePaySheet();
@@ -183,7 +221,6 @@ function injectApplePayModal() {
 }
 
 function openApplePaySheet() {
-  // Calculate total
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const tax = subtotal * 0.08;
   const tipAmount = checkoutState.customTip || (subtotal * (checkoutState.tipPercentage / 100));
@@ -191,7 +228,6 @@ function openApplePaySheet() {
 
   document.getElementById('apAmount').textContent = `$${total.toFixed(2)}`;
 
-  // Reset state
   document.getElementById('apFaceIdSection').classList.remove('hidden');
   document.getElementById('apSuccessSection').classList.add('hidden');
   document.getElementById('apFaceIdRing').classList.remove('scanning', 'success');
@@ -199,10 +235,7 @@ function openApplePaySheet() {
   document.getElementById('apFaceIdIcon').classList.remove('scanning');
   document.getElementById('apCancelBtn').classList.remove('hidden');
 
-  const overlay = document.getElementById('applePayOverlay');
-  overlay.classList.add('active');
-
-  // Start Face ID scan after short delay
+  document.getElementById('applePayOverlay').classList.add('active');
   setTimeout(() => simulateFaceIdScan(), 600);
 }
 
@@ -215,19 +248,16 @@ function simulateFaceIdScan() {
   ring.classList.add('scanning');
   icon.classList.add('scanning');
 
-  // Auth complete
   setTimeout(() => {
     ring.classList.remove('scanning');
     ring.classList.add('success');
     icon.classList.remove('scanning');
 
     setTimeout(() => {
-      // Swap to success screen
       document.getElementById('apFaceIdSection').classList.add('hidden');
       document.getElementById('apCancelBtn').classList.add('hidden');
       document.getElementById('apSuccessSection').classList.remove('hidden');
 
-      // Animate check
       const circle = document.querySelector('.ap-check-circle');
       const checkPath = document.querySelector('.ap-check-path');
       circle.style.strokeDasharray = '176';
@@ -246,7 +276,6 @@ function simulateFaceIdScan() {
         });
       });
 
-      // Close and complete order
       setTimeout(() => {
         closeApplePaySheet();
         setTimeout(() => placeOrder(), 300);
@@ -257,11 +286,10 @@ function simulateFaceIdScan() {
 }
 
 function closeApplePaySheet() {
-  const overlay = document.getElementById('applePayOverlay');
-  overlay.classList.remove('active');
+  document.getElementById('applePayOverlay').classList.remove('active');
 }
 
-// ─── Event Listeners ────────────────────────────────────────────────────────
+//  Event Listeners 
 
 function initializeEventListeners() {
   bagBtn.addEventListener('click', () => {
@@ -279,8 +307,7 @@ function initializeEventListeners() {
 
   navBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      const tab = btn.dataset.tab;
-      if (tab === 'order') {
+      if (btn.dataset.tab === 'order') {
         cancelPendingNavigation();
         navigateTo('home');
       }
@@ -290,8 +317,7 @@ function initializeEventListeners() {
   smoothieCards.forEach(card => {
     card.addEventListener('click', () => {
       cancelPendingNavigation();
-      const smoothieName = card.dataset.smoothie;
-      selectSmoothie(smoothieName);
+      selectSmoothie(card.dataset.smoothie);
     });
   });
 
@@ -336,6 +362,7 @@ function initializeEventListeners() {
   }
 
   if (returnHomeBtn) {
+    // "Return Home" keeps the banner visible — don't clear lastOrder here
     returnHomeBtn.addEventListener('click', () => {
       cartItems = [];
       updateCartBadge();
@@ -357,7 +384,7 @@ function cancelPendingNavigation() {
   }
 }
 
-// ─── Navigation ─────────────────────────────────────────────────────────────
+//  Navigation 
 
 function navigateTo(screen) {
   Object.values(screens).forEach(s => s.classList.remove('active'));
@@ -382,12 +409,12 @@ function navigateTo(screen) {
   }
 }
 
-// ─── Smoothie ───────────────────────────────────────────────────────────────
+//  Smoothie 
 
 function selectSmoothie(name) {
   const data = smoothieData[name];
   currentSmoothie = {
-    name: name,
+    name,
     size: 'Medium',
     price: 5.50,
     ingredients: [...data.defaultIngredients],
@@ -403,45 +430,36 @@ function selectSmoothie(name) {
     if (btn.dataset.size === 'Medium') btn.classList.add('active');
   });
 
-  document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
-    checkbox.checked = data.defaultIngredients.includes(checkbox.value);
+  document.querySelectorAll('.ingredient-checkbox').forEach(cb => {
+    cb.checked = data.defaultIngredients.includes(cb.value);
   });
 
-  document.querySelectorAll('.addon-checkbox').forEach(checkbox => {
-    checkbox.checked = false;
-  });
+  document.querySelectorAll('.addon-checkbox').forEach(cb => { cb.checked = false; });
 
   updateAddToBagButton();
   navigateTo('customize');
 }
 
 function updateIngredients() {
-  currentSmoothie.ingredients = Array.from(document.querySelectorAll('.ingredient-checkbox:checked'))
-    .map(cb => cb.value);
+  currentSmoothie.ingredients = Array.from(document.querySelectorAll('.ingredient-checkbox:checked')).map(cb => cb.value);
 }
 
 function updateAddOns() {
-  currentSmoothie.addOns = Array.from(document.querySelectorAll('.addon-checkbox:checked'))
-    .map(cb => cb.value);
+  currentSmoothie.addOns = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value);
 }
 
 function updateAddToBagButton() {
-  const addOnPrice = currentSmoothie.addOns.length * 1.00;
-  const totalPrice = currentSmoothie.price + addOnPrice;
-  document.getElementById('addToBagPrice').textContent = `$${totalPrice.toFixed(2)}`;
+  const total = currentSmoothie.price + currentSmoothie.addOns.length;
+  document.getElementById('addToBagPrice').textContent = `$${total.toFixed(2)}`;
 }
 
 function updateCartBadge() {
   const count = cartItems.length;
   cartBadge.textContent = count;
-  if (count > 0) {
-    cartBadge.classList.remove('hidden');
-  } else {
-    cartBadge.classList.add('hidden');
-  }
+  cartBadge.classList.toggle('hidden', count === 0);
 }
 
-// ─── Cart ────────────────────────────────────────────────────────────────────
+//  Cart 
 
 function addToCart() {
   const addOnPrice = currentSmoothie.addOns.length * 1.00;
@@ -460,7 +478,6 @@ function addToCart() {
 
   cartItems.push(item);
   updateCartBadge();
-
   showToast('Added to Bag', `${item.name} has been added to your bag!`, 'success');
 
   navTimeout = setTimeout(() => {
@@ -481,11 +498,9 @@ function updateQuantity(id, delta) {
   if (item) {
     item.quantity = Math.max(1, item.quantity + delta);
     renderCartItems();
-
     setTimeout(() => {
-      const values = document.querySelectorAll(".number-button .value");
-      values.forEach(v => v.classList.add("pop"));
-      setTimeout(() => values.forEach(v => v.classList.remove("pop")), 200);
+      document.querySelectorAll(".number-button .value").forEach(v => v.classList.add("pop"));
+      setTimeout(() => document.querySelectorAll(".number-button .value").forEach(v => v.classList.remove("pop")), 200);
     }, 0);
   }
 }
@@ -535,7 +550,7 @@ function renderCartItems() {
   document.getElementById('subtotalAmount').textContent = `$${subtotal.toFixed(2)}`;
 }
 
-// ─── Checkout ────────────────────────────────────────────────────────────────
+//  Checkout 
 
 function initializeCheckoutListeners() {
   populateTimeOptions();
@@ -545,12 +560,11 @@ function initializeCheckoutListeners() {
       document.querySelectorAll('.pickup-option').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       checkoutState.pickupTime = btn.dataset.pickup;
-
-      const timePickerDropdown = document.getElementById('timePickerDropdown');
+      const dropdown = document.getElementById('timePickerDropdown');
       if (checkoutState.pickupTime === 'scheduled') {
-        timePickerDropdown.classList.remove('hidden');
+        dropdown.classList.remove('hidden');
       } else {
-        timePickerDropdown.classList.add('hidden');
+        dropdown.classList.add('hidden');
         checkoutState.scheduledTime = null;
       }
     });
@@ -568,14 +582,8 @@ function initializeCheckoutListeners() {
       document.querySelectorAll('.payment-option').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       checkoutState.paymentMethod = btn.dataset.payment;
-
-      // Update Place Order button label
-      const placeOrderBtn = document.getElementById('placeOrderBtn');
-      if (btn.dataset.payment === 'apple') {
-        placeOrderBtn.textContent = 'Pay with Apple Pay';
-      } else {
-        placeOrderBtn.textContent = 'Place Order';
-      }
+      document.getElementById('placeOrderBtn').textContent =
+        btn.dataset.payment === 'apple' ? 'Pay with Apple Pay' : 'Place Order';
     });
   });
 
@@ -624,18 +632,16 @@ function populateTimeOptions() {
   let currentTime = new Date(startTime);
 
   while (currentTime.getHours() < endHour || (currentTime.getHours() === endHour && currentTime.getMinutes() === 0)) {
-    const hours = currentTime.getHours();
-    const mins = currentTime.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const displayHours = hours % 12 || 12;
-    const displayMinutes = mins.toString().padStart(2, '0');
-
-    const timeString = `${displayHours}:${displayMinutes} ${ampm}`;
+    const h = currentTime.getHours();
+    const m = currentTime.getMinutes();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const dh = h % 12 || 12;
+    const dm = m.toString().padStart(2, '0');
+    const timeString = `${dh}:${dm} ${ampm}`;
     const option = document.createElement('option');
     option.value = timeString;
     option.textContent = timeString;
     select.appendChild(option);
-
     currentTime.setMinutes(currentTime.getMinutes() + 30);
     if (currentTime.getHours() > endHour) break;
   }
@@ -651,8 +657,7 @@ function renderCheckoutScreen() {
   const tipAmount = checkoutState.customTip || (subtotal * (checkoutState.tipPercentage / 100));
   const totalAmount = subtotal + tax + tipAmount;
 
-  const orderItemsContainer = document.getElementById('checkoutOrderItems');
-  orderItemsContainer.innerHTML = cartItems.map(item => `
+  document.getElementById('checkoutOrderItems').innerHTML = cartItems.map(item => `
     <div class="order-item">
       <div class="order-item-header">
         <span>${item.quantity}x ${item.name}</span>
@@ -667,14 +672,11 @@ function renderCheckoutScreen() {
   document.getElementById('checkoutTip').textContent = `$${tipAmount.toFixed(2)}`;
   document.getElementById('checkoutTotal').textContent = `$${totalAmount.toFixed(2)}`;
 
-  // Reset pickup time UI
   document.querySelectorAll('.pickup-option').forEach(b => b.classList.remove('active'));
   const asapBtn = document.querySelector('.pickup-option[data-pickup="asap"]');
   if (asapBtn) asapBtn.classList.add('active');
   checkoutState.pickupTime = 'asap';
   document.getElementById('timePickerDropdown').classList.add('hidden');
-
-  // Reset place order button label
   document.getElementById('placeOrderBtn').textContent = 'Place Order';
 }
 
@@ -683,10 +685,11 @@ function updateCheckoutTotals() {
   const tax = subtotal * 0.08;
   const tipAmount = checkoutState.customTip || (subtotal * (checkoutState.tipPercentage / 100));
   const totalAmount = subtotal + tax + tipAmount;
-
   document.getElementById('checkoutTip').textContent = `$${tipAmount.toFixed(2)}`;
   document.getElementById('checkoutTotal').textContent = `$${totalAmount.toFixed(2)}`;
 }
+
+//  Place Order 
 
 function placeOrder() {
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -700,18 +703,28 @@ function placeOrder() {
   } else {
     const now = new Date();
     now.setMinutes(now.getMinutes() + 15);
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const displayHours = hours % 12 || 12;
-    pickupTimeStr = `${displayHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+    const h = now.getHours();
+    const m = now.getMinutes();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    pickupTimeStr = `${h % 12 || 12}:${m.toString().padStart(2, '0')} ${ampm}`;
   }
 
-  document.getElementById('pickupTime').textContent = pickupTimeStr;
-  document.getElementById('orderNumber').textContent = Math.floor(Math.random() * 100) + 1;
+  const orderNumber = Math.floor(Math.random() * 100) + 1;
 
-  const confirmOrderItems = document.getElementById('confirmationOrderItems');
-  confirmOrderItems.innerHTML = cartItems.map(item => `
+  const orderData = {
+    orderNumber,
+    pickupTime: pickupTimeStr,
+    subtotal,
+    tax,
+    tip: tipAmount,
+    total: totalAmount,
+    items: cartItems.map(i => ({ ...i }))
+  };
+
+  document.getElementById('pickupTime').textContent = pickupTimeStr;
+  document.getElementById('orderNumber').textContent = orderNumber;
+
+  document.getElementById('confirmationOrderItems').innerHTML = orderData.items.map(item => `
     <div class="order-item">
       <div class="order-item-header">
         <span>${item.quantity}x ${item.name}</span>
@@ -728,10 +741,13 @@ function placeOrder() {
 
   showToast('Order Placed', 'Your order has been placed successfully!', 'success');
 
-  setTimeout(() => navigateTo('confirmation'), 500);
+  setTimeout(() => {
+    navigateTo('confirmation');
+    setTimeout(() => showOrderStatusBanner(orderData), 400);
+  }, 500);
 }
 
-// ─── Toast ───────────────────────────────────────────────────────────────────
+// toast 
 
 function showToast(title, message, type = 'success') {
   const toastContainer = document.getElementById('toastContainer');
@@ -743,9 +759,7 @@ function showToast(title, message, type = 'success') {
       <div class="toast-message">${message}</div>
     </div>
   `;
-
   toastContainer.appendChild(toast);
-
   setTimeout(() => {
     toast.style.animation = 'slideIn 0.3s ease-out reverse';
     setTimeout(() => toast.remove(), 300);
