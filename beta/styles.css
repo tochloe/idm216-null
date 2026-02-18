@@ -173,7 +173,7 @@ html{
   font-weight: 700;
 }
 
-/* Order Status Banner */
+/* ── Order Status Banner ─────────────────────────────── */
 .order-status-banner {
   display: flex;
   align-items: center;
@@ -181,16 +181,20 @@ html{
   gap: 10px;
   background-color: var(--off-white);
   border-bottom: 1.5px solid rgba(221, 51, 91, 0.2);
+  padding: 11px 20px;
   cursor: pointer;
-  overflow: hidden;
+  transition: background-color 0.2s;
+  /* hidden by default */
   max-height: 0;
+  overflow: hidden;
   opacity: 0;
-  padding: 0 20px;
   transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.4s ease;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .order-status-banner.visible {
-  max-height: 60px;
+  max-height: 80px;
   opacity: 1;
   padding: 11px 20px;
 }
@@ -229,6 +233,8 @@ html{
   color: var(--dragonfruit);
   flex-shrink: 0;
 }
+
+/* ── End Order Status Banner ─────────────────────────── */
 
 .welcome-section {
   padding: 16px 0;
@@ -696,33 +702,35 @@ html{
   transition: all 0.2s;
 }
 
+/* ── Sticky Checkout Button ──────────────────────────── */
 .cart-summary {
-  position: sticky;
-  bottom: 100px;
+  position: fixed;
+  bottom: 80px; /* sits right on top of the nav bar */
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
   width: calc(100% - 48px);
   max-width: 382px;
-  margin: 0 auto;
   background: white;
   border: 1px solid #e0e0e0;
   border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 50;
+  padding: 16px 20px;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.1);
+  z-index: 200;
   opacity: 0;
-  transform: translateY(20px);
   pointer-events: none;
-  transition: all 0.3s;
+  transition: opacity 0.3s, transform 0.3s;
 }
 
 .cart-summary.show {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(-50%) translateY(0);
   pointer-events: all;
 }
 
 .cart-summary.hidden {
   display: none;
 }
+/* ── End Sticky Checkout Button ──────────────────────── */
 
 .summary-row {
   display: flex;
