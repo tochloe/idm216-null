@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customize • KC's Smoothies</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="app" class="app-container">
+
+  <main class="main-content">
+
+    <div id="customizeScreen" class="screen active">
+
+      <button id="backBtn" class="back-btn"></button>
+
+      <div class="customize-content">
+
+        <h2 id="customizeTitle" class="screen-title">Custom Smoothie</h2>
+
+        <div class="customize-image">
+          <img id="customizeImage" src="./img/smoothie.avif">
+        </div>
+
+         <div class="section">
+            <h3 class="section-title">Select Size</h3>
+            <div class="size-options">
+              <button class="size-btn" data-size="Small" data-price="4.50">
+                <span class="size-label">Small</span>
+                <span class="size-price">$4.50</span>
+              </button>
+              <button class="size-btn active" data-size="Medium" data-price="5.50">
+                <span class="size-label">Medium</span>
+                <span class="size-price">$5.50</span>
+              </button>
+              <button class="size-btn" data-size="Large" data-price="6.50">
+                <span class="size-label">Large</span>
+                <span class="size-price">$6.50</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ingredients -->
+          <div class="section">
+            <h3 class="section-title">Ingredients</h3>
+            <div class="checkbox-grid">
+              <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-checkbox" value="Strawberry">
+                <span class="checkbox-custom"></span>
+                <span>Strawberry</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-checkbox" value="Banana">
+                <span class="checkbox-custom"></span>
+                <span>Banana</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-checkbox" value="Mango">
+                <span class="checkbox-custom"></span>
+                <span>Mango</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-checkbox" value="Blueberry">
+                <span class="checkbox-custom"></span>
+                <span>Blueberry</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-checkbox" value="Pineapple">
+                <span class="checkbox-custom"></span>
+                <span>Pineapple</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-checkbox" value="Spinach">
+                <span class="checkbox-custom"></span>
+                <span>Spinach</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-checkbox" value="Taro">
+                <span class="checkbox-custom"></span>
+                <span>Taro</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- addons -->
+          <div class="section">
+            <h3 class="section-title">Add-ons (+$1.00 each)</h3>
+            <div class="checkbox-grid">
+              <label class="checkbox-label">
+                <input type="checkbox" class="addon-checkbox" value="Protein Powder">
+                <span class="checkbox-custom"></span>
+                <span>Protein Powder</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="addon-checkbox" value="Chia Seeds">
+                <span class="checkbox-custom"></span>
+                <span>Chia Seeds</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="addon-checkbox" value="Peanut Butter">
+                <span class="checkbox-custom"></span>
+                <span>Peanut Butter</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="addon-checkbox" value="Yogurt">
+                <span class="checkbox-custom"></span>
+                <span>Yogurt</span>
+              </label>
+            </div>
+          </div>
+
+          <button id="addToBagBtn" class="add-to-bag-btn">
+            <span id="addToBagText">Add to Bag</span>
+            <span id="addToBagPrice">$5.50</span>
+          </button>
+        </div>
+      </div>
+
+
+        <!-- (Paste your original sections here EXACTLY as-is) -->
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

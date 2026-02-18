@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+
+<div class="app-container fade-in">
+
+  <header class="header">
+    <button onclick="navigate('bag.html')" class="back-btn">←</button>
+    <h2 class="screen-title">Checkout</h2>
+  </header>
+
+  <main class="main-content">
+
+    <div class="checkout-summary" id="checkoutSummary"></div>
+
+    <div class="payment-section">
+      <h3>Payment Method</h3>
+      <button class="payment-btn">Apple Pay</button>
+      <button class="payment-btn">Credit Card</button>
+    </div>
+
+    <button onclick="placeOrderAndGo()" class="place-order-btn">
+      Place Order
+    </button>
+
+  </main>
+
+</div>
+</body>
+</html>
