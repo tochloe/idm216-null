@@ -2,17 +2,16 @@
 let currentScreen = 'home';
 let cartItems = [];
 let editingItem = null;
-let activeOrder = null; // tracks the most recent placed order
 let currentSmoothie = {
   name: 'Custom Smoothie',
   size: 'Medium',
   price: 5.50,
-  ingredients: ['Strawberry', 'Banana'],
+  ingredients: [],
   addOns: [],
   image: './img/smoothie.avif'
 };
 
-// checkout state
+// Checkout state
 let checkoutState = {
   pickupTime: 'asap',
   scheduledTime: null,
@@ -22,7 +21,10 @@ let checkoutState = {
   customTip: 0
 };
 
-// SMOOTHIE INFO
+// Order tracking state
+let activeOrder = null;
+
+// Smoothie data
 const smoothieData = {
   'Custom Smoothie': {
     image: './img/smoothie.avif',
@@ -63,6 +65,7 @@ const startShoppingBtn = document.getElementById('startShoppingBtn');
 const checkoutBtn = document.getElementById('checkoutBtn');
 const placeOrderBtn = document.getElementById('placeOrderBtn');
 const returnHomeBtn = document.getElementById('returnHomeBtn');
+const logo = document.querySelector('.logo');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -71,30 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeScrollHandlers();
 });
 
-// ── Order Status Banner ────────────────────────────────
-
-/**
- * Show the order status banner on the home screen.
- * @param {string} orderNum  - The order number
- * @param {string} pickupTime - Formatted pickup time string
- */
-function showOrderStatusBanner(orderNum, pickupTime) {
-  const banner = document.getElementById('orderStatusBanner');
-  const text = document.getElementById('orderStatusText');
-
-  activeOrder = { orderNum, pickupTime };
-  text.textContent = `KC is preparing your order · Pick up ${pickupTime}`;
-  banner.classList.add('visible');
-}
-
-function hideOrderStatusBanner() {
-  const banner = document.getElementById('orderStatusBanner');
-  banner.classList.remove('visible');
-  activeOrder = null;
-}
-
-// ── End Order Status Banner ────────────────────────────
-
 // Scroll handlers for sticky buttons
 function initializeScrollHandlers() {
   const customizeScreen = document.getElementById('customizeScreen');
@@ -102,11 +81,13 @@ function initializeScrollHandlers() {
   const addToBagBtn = document.getElementById('addToBagBtn');
   const cartSummary = document.getElementById('cartSummary');
 
+  // Handle scroll on customize screen
   customizeScreen.addEventListener('scroll', () => {
     const scrollTop = customizeScreen.scrollTop;
     const scrollHeight = customizeScreen.scrollHeight;
     const clientHeight = customizeScreen.clientHeight;
     
+    // Show button when scrolled down at least 200px or near bottom
     if (scrollTop > 200 || (scrollHeight - scrollTop - clientHeight) < 100) {
       addToBagBtn.classList.add('show');
     } else {
@@ -114,12 +95,14 @@ function initializeScrollHandlers() {
     }
   });
 
+  // Handle scroll on bag screen
   bagScreen.addEventListener('scroll', () => {
     const scrollTop = bagScreen.scrollTop;
     const scrollHeight = bagScreen.scrollHeight;
     const clientHeight = bagScreen.clientHeight;
     
-    if (scrollTop > 100 || (scrollHeight - scrollTop - clientHeight) < 100) {
+    // Show button when scrolled down at least 200px or near bottom
+    if (scrollTop > 200 || (scrollHeight - scrollTop - clientHeight) < 100) {
       cartSummary.classList.add('show');
     } else {
       cartSummary.classList.remove('show');
@@ -134,20 +117,14 @@ function initializeEventListeners() {
   backBtn.addEventListener('click', () => navigateTo('home'));
   backFromBagBtn.addEventListener('click', () => navigateTo('home'));
   startShoppingBtn.addEventListener('click', () => navigateTo('home'));
-
-  // Order status banner → go to confirmation screen if order is active
-  const orderStatusBanner = document.getElementById('orderStatusBanner');
-  orderStatusBanner.addEventListener('click', () => {
-    if (activeOrder) {
-      navigateTo('confirmation');
-    }
-  });
-  orderStatusBanner.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      if (activeOrder) navigateTo('confirmation');
-    }
-  });
+  
+  // Logo click to return home
+  if (logo) {
+    logo.addEventListener('click', () => {
+      navigateTo('home');
+    });
+    logo.style.cursor = 'pointer';
+  }
   
   navBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -177,13 +154,14 @@ function initializeEventListeners() {
     });
   });
 
-  // checkboxes
+  // Ingredient checkboxes
   document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
     checkbox.addEventListener('change', () => {
       updateIngredients();
     });
   });
 
+  // Add-on checkboxes
   document.querySelectorAll('.addon-checkbox').forEach(checkbox => {
     checkbox.addEventListener('change', () => {
       updateAddOns();
@@ -191,12 +169,12 @@ function initializeEventListeners() {
     });
   });
 
-  // add to bag
+  // Add to bag
   addToBagBtn.addEventListener('click', () => {
     addToCart();
   });
 
-  // checkout
+  // Checkout
   if (checkoutBtn) {
     checkoutBtn.addEventListener('click', () => {
       navigateTo('checkout');
@@ -227,14 +205,27 @@ function initializeEventListeners() {
     });
   }
 
+  // View Order button
+  const viewOrderBtn = document.getElementById('viewOrderBtn');
+  if (viewOrderBtn) {
+    viewOrderBtn.addEventListener('click', () => {
+      if (activeOrder) {
+        renderOrderDetailScreen();
+        navigateTo('confirmation');
+      }
+    });
+  }
+
   // Checkout option selections
   initializeCheckoutListeners();
 }
 
 // Navigation
 function navigateTo(screen) {
+  // Remove active class from all screens
   Object.values(screens).forEach(s => s.classList.remove('active'));
   
+  // Add active class to target screen
   screens[screen].classList.add('active');
   currentScreen = screen;
 
@@ -256,18 +247,30 @@ function navigateTo(screen) {
     renderCartItems();
     screens.bag.scrollTop = 0;
     const cartSummary = document.getElementById('cartSummary');
-    // Show checkout button immediately if cart has items
-    if (cartItems.length > 0) {
-      cartSummary.classList.remove('hidden');
-      // Trigger show after a tick so transition fires
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          cartSummary.classList.add('show');
-        });
-      });
-    } else {
+    if (!cartSummary.classList.contains('hidden')) {
       cartSummary.classList.remove('show');
     }
+  }
+
+  if (screen === 'home') {
+    updateOrderStatusBanner();
+  }
+}
+
+// Update order status banner
+function updateOrderStatusBanner() {
+  const orderStatusBanner = document.getElementById('orderStatusBanner');
+  
+  if (activeOrder && activeOrder.status === 'in-progress') {
+    // Update banner content
+    document.getElementById('statusOrderNumber').textContent = activeOrder.orderNumber;
+    document.getElementById('statusPickupTime').textContent = activeOrder.pickupTime;
+    
+    // Show banner
+    orderStatusBanner.classList.remove('hidden');
+  } else {
+    // Hide banner if no active order
+    orderStatusBanner.classList.add('hidden');
   }
 }
 
@@ -283,9 +286,11 @@ function selectSmoothie(name) {
     image: data.image
   };
 
+  // update customizations
   document.getElementById('customizeTitle').textContent = name;
   document.getElementById('customizeImage').src = data.image;
 
+  // changing sizes
   document.querySelectorAll('.size-btn').forEach(btn => {
     btn.classList.remove('active');
     if (btn.dataset.size === 'Medium') {
@@ -293,6 +298,7 @@ function selectSmoothie(name) {
     }
   });
 
+  // Reset checkboxes
   document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
     checkbox.checked = data.defaultIngredients.includes(checkbox.value);
   });
@@ -371,6 +377,7 @@ function updateQuantity(id, delta) {
     item.quantity = Math.max(1, item.quantity + delta);
     renderCartItems();
 
+    // animate value
     setTimeout(() => {
       const values = document.querySelectorAll(".number-button .value");
       values.forEach(v => v.classList.add("pop"));
@@ -388,7 +395,6 @@ function renderCartItems() {
   if (cartItems.length === 0) {
     container.innerHTML = '';
     emptyMessage.style.display = 'block';
-    summary.classList.remove('show');
     summary.classList.add('hidden');
     return;
   }
@@ -409,18 +415,23 @@ function renderCartItems() {
         <div class="cart-item-ingredients">${item.ingredients.join(', ')}${item.addOns.length > 0 ? ' + ' + item.addOns.join(', ') : ''}</div>
         <div class="cart-item-footer">
           <div class="number-button" role="group" aria-label="Quantity selector">
-            <button 
-              class="step-btn minus" 
-              aria-label="Decrease quantity"
-              onclick="updateQuantity('${item.id}', -1)"
-            >−</button>
-            <span class="value" aria-live="polite">${item.quantity}</span>
-            <button 
-              class="step-btn plus" 
-              aria-label="Increase quantity"
-              onclick="updateQuantity('${item.id}', 1)"
-            >+</button>
-          </div>
+  <button 
+    class="step-btn minus" 
+    aria-label="Decrease quantity"
+    onclick="updateQuantity('${item.id}', -1)"
+  >−</button>
+
+  <span class="value" aria-live="polite">
+    ${item.quantity}
+  </span>
+
+  <button 
+    class="step-btn plus" 
+    aria-label="Increase quantity"
+    onclick="updateQuantity('${item.id}', 1)"
+  >+</button>
+</div>
+
           <div class="cart-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
         </div>
         <div class="item-actions">
@@ -430,20 +441,24 @@ function renderCartItems() {
     </div>
   `).join('');
 
+  // updating total
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   document.getElementById('subtotalAmount').textContent = `$${subtotal.toFixed(2)}`;
 }
 
 // Checkout Functions
 function initializeCheckoutListeners() {
+  // Populate time picker options
   populateTimeOptions();
 
+  // Pickup time options
   document.querySelectorAll('.pickup-option').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.pickup-option').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       checkoutState.pickupTime = btn.dataset.pickup;
       
+      // Show/hide time picker dropdown
       const timePickerDropdown = document.getElementById('timePickerDropdown');
       if (checkoutState.pickupTime === 'scheduled') {
         timePickerDropdown.classList.remove('hidden');
@@ -454,6 +469,7 @@ function initializeCheckoutListeners() {
     });
   });
 
+  // Scheduled time select
   const scheduledTimeSelect = document.getElementById('scheduledTime');
   if (scheduledTimeSelect) {
     scheduledTimeSelect.addEventListener('change', (e) => {
@@ -461,6 +477,7 @@ function initializeCheckoutListeners() {
     });
   }
 
+  // Payment method options
   document.querySelectorAll('.payment-option').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.payment-option').forEach(b => b.classList.remove('active'));
@@ -469,6 +486,7 @@ function initializeCheckoutListeners() {
     });
   });
 
+  // Tip buttons
   document.querySelectorAll('.tip-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('active'));
@@ -476,7 +494,7 @@ function initializeCheckoutListeners() {
       const tipValue = btn.dataset.tip;
       if (tipValue === 'custom') {
         checkoutState.tipPercentage = 0;
-        checkoutState.customTip = 1.00;
+        checkoutState.customTip = 1.00; // Default custom tip
       } else {
         checkoutState.tipPercentage = parseInt(tipValue);
         checkoutState.customTip = 0;
@@ -485,6 +503,7 @@ function initializeCheckoutListeners() {
     });
   });
 
+  // Pickup name input
   const pickupNameInput = document.getElementById('pickupName');
   if (pickupNameInput) {
     pickupNameInput.addEventListener('input', (e) => {
@@ -497,12 +516,16 @@ function populateTimeOptions() {
   const select = document.getElementById('scheduledTime');
   if (!select) return;
 
+  // Get current time
   const now = new Date();
+  const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
   
+  // Start from 30 minutes from now, rounded to next 30-min interval
   let startTime = new Date(now);
   startTime.setMinutes(currentMinute + 30);
   
+  // Round to next 30-minute interval
   const minutes = startTime.getMinutes();
   const roundedMinutes = minutes <= 30 ? 30 : 60;
   startTime.setMinutes(roundedMinutes);
@@ -511,18 +534,21 @@ function populateTimeOptions() {
     startTime.setMinutes(0);
   }
   
+  // End time is 5 PM (17:00)
   const endHour = 17;
   
+  // Clear existing options
   select.innerHTML = '';
   
+  // Generate time slots
   let currentTime = new Date(startTime);
   
   while (currentTime.getHours() < endHour || (currentTime.getHours() === endHour && currentTime.getMinutes() === 0)) {
     const hours = currentTime.getHours();
-    const mins = currentTime.getMinutes();
+    const minutes = currentTime.getMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
     const displayHours = hours % 12 || 12;
-    const displayMinutes = mins.toString().padStart(2, '0');
+    const displayMinutes = minutes.toString().padStart(2, '0');
     
     const timeString = `${displayHours}:${displayMinutes} ${ampm}`;
     const option = document.createElement('option');
@@ -530,11 +556,14 @@ function populateTimeOptions() {
     option.textContent = timeString;
     select.appendChild(option);
     
+    // Add 30 minutes
     currentTime.setMinutes(currentTime.getMinutes() + 30);
     
+    // Stop if we've passed 5 PM
     if (currentTime.getHours() > endHour) break;
   }
-
+  
+  // Set default selected time
   if (select.options.length > 0) {
     checkoutState.scheduledTime = select.options[0].value;
   }
@@ -542,10 +571,11 @@ function populateTimeOptions() {
 
 function renderCheckoutScreen() {
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const tax = subtotal * 0.08;
+  const tax = subtotal * 0.08; // 8% tax
   const tipAmount = checkoutState.customTip || (subtotal * (checkoutState.tipPercentage / 100));
   const totalAmount = subtotal + tax + tipAmount;
 
+  // Render order items
   const orderItemsContainer = document.getElementById('checkoutOrderItems');
   orderItemsContainer.innerHTML = cartItems.map(item => `
     <div class="order-item">
@@ -557,6 +587,7 @@ function renderCheckoutScreen() {
     </div>
   `).join('');
 
+  // Update totals
   document.getElementById('checkoutSubtotal').textContent = `$${subtotal.toFixed(2)}`;
   document.getElementById('checkoutTax').textContent = `$${tax.toFixed(2)}`;
   document.getElementById('checkoutTip').textContent = `$${tipAmount.toFixed(2)}`;
@@ -579,24 +610,38 @@ function placeOrder() {
   const tipAmount = checkoutState.customTip || (subtotal * (checkoutState.tipPercentage / 100));
   const totalAmount = subtotal + tax + tipAmount;
 
+  // Determine pickup time
   let pickupTimeStr;
   if (checkoutState.pickupTime === 'scheduled' && checkoutState.scheduledTime) {
     pickupTimeStr = checkoutState.scheduledTime;
   } else {
+    // Calculate pickup time (15 minutes from now)
     const now = new Date();
     now.setMinutes(now.getMinutes() + 15);
     const hours = now.getHours();
-    const mins = now.getMinutes();
+    const minutes = now.getMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
     const displayHours = hours % 12 || 12;
-    pickupTimeStr = `${displayHours}:${mins.toString().padStart(2, '0')} ${ampm}`;
+    pickupTimeStr = `${displayHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
   }
 
-  const orderNum = Math.floor(Math.random() * 100) + 1;
+  const orderNumber = Math.floor(Math.random() * 100) + 1;
+
+  // Create active order
+  activeOrder = {
+    orderNumber: orderNumber,
+    pickupTime: pickupTimeStr,
+    items: [...cartItems],
+    subtotal: subtotal,
+    tax: tax,
+    tip: tipAmount,
+    total: totalAmount,
+    status: 'in-progress'
+  };
 
   // Render confirmation screen
   document.getElementById('pickupTime').textContent = pickupTimeStr;
-  document.getElementById('orderNumber').textContent = orderNum;
+  document.getElementById('orderNumber').textContent = orderNumber;
 
   const confirmOrderItems = document.getElementById('confirmationOrderItems');
   confirmOrderItems.innerHTML = cartItems.map(item => `
@@ -614,13 +659,6 @@ function placeOrder() {
   document.getElementById('confirmTip').textContent = `$${tipAmount.toFixed(2)}`;
   document.getElementById('confirmTotal').textContent = `$${totalAmount.toFixed(2)}`;
 
-  // Show the order status banner on home screen
-  showOrderStatusBanner(orderNum, pickupTimeStr);
-
-  // Clear cart
-  cartItems = [];
-  updateCartBadge();
-
   showToast('Order Placed', 'Your order has been placed successfully!', 'success');
   
   setTimeout(() => {
@@ -628,11 +666,28 @@ function placeOrder() {
   }, 500);
 }
 
-// Return home now also wires up the banner correctly (banner persists until dismissed or new session)
-if (returnHomeBtn) {
-  returnHomeBtn.addEventListener('click', () => {
-    navigateTo('home');
-  });
+// Render order detail screen when viewing from home
+function renderOrderDetailScreen() {
+  if (!activeOrder) return;
+
+  document.getElementById('pickupTime').textContent = activeOrder.pickupTime;
+  document.getElementById('orderNumber').textContent = activeOrder.orderNumber;
+
+  const confirmOrderItems = document.getElementById('confirmationOrderItems');
+  confirmOrderItems.innerHTML = activeOrder.items.map(item => `
+    <div class="order-item">
+      <div class="order-item-header">
+        <span>${item.quantity}x ${item.name}</span>
+        <span>$${(item.price * item.quantity).toFixed(2)}</span>
+      </div>
+      <div class="order-item-details">${item.size}, ${item.ingredients.join(', ')}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('confirmSubtotal').textContent = `$${activeOrder.subtotal.toFixed(2)}`;
+  document.getElementById('confirmTax').textContent = `$${activeOrder.tax.toFixed(2)}`;
+  document.getElementById('confirmTip').textContent = `$${activeOrder.tip.toFixed(2)}`;
+  document.getElementById('confirmTotal').textContent = `$${activeOrder.total.toFixed(2)}`;
 }
 
 // pop-ups

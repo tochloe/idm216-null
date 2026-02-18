@@ -14,7 +14,7 @@
     <!-- header -->
     <header id="header" class="header">
       <div class="header-content">
-        <img src="./img/KC’s.svg" alt="KC's Smoothie Bar" class="logo">
+        <img src="./img/KC's.svg" alt="KC's Smoothie Bar" class="logo">
         <div class="header-actions">
           <button id="bagBtn" class="icon-btn">
             <svg class="icon" viewBox="0 0 32 32" fill="none">
@@ -42,19 +42,26 @@
           </svg>
           <p class="banner-text">33rd St. & Lancaster Walk</p>
         </div>
-        
-<div id="orderStatusBanner" class="order-status-banner" role="button" tabindex="0" aria-label="View order status">
-  <div class="order-status-left">
-    <svg class="order-status-icon" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-      <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <span id="orderStatusText" class="order-status-text">KC is preparing your order</span>
-  </div>
-  <svg class="order-status-chevron" viewBox="0 0 24 24" fill="none">
-    <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>
-</div>
+
+        <!-- Order Status Banner -->
+        <div id="orderStatusBanner" class="order-status-banner hidden">
+          <div class="order-status-content">
+            <div class="order-status-header">
+              <div class="order-status-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                  <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="order-status-text">
+                <p class="order-status-title">Order #<span id="statusOrderNumber">43</span> In Progress</p>
+                <p class="order-status-time">Ready at <span id="statusPickupTime">12:40 PM</span></p>
+              </div>
+            </div>
+            <button id="viewOrderBtn" class="view-order-btn">View Order</button>
+          </div>
+        </div>
+
         <div class="welcome-section">
           <h2 class="welcome-title">What are you craving?</h2>
           
@@ -162,11 +169,6 @@
                 <span class="checkbox-custom"></span>
                 <span>Spinach</span>
               </label>
-              <label class="checkbox-label">
-                <input type="checkbox" class="ingredient-checkbox" value="Taro">
-                <span class="checkbox-custom"></span>
-                <span>Taro</span>
-              </label>
             </div>
           </div>
 
@@ -190,9 +192,9 @@
                 <span>Peanut Butter</span>
               </label>
               <label class="checkbox-label">
-                <input type="checkbox" class="addon-checkbox" value="Yogurt">
+                <input type="checkbox" class="addon-checkbox" value="Honey">
                 <span class="checkbox-custom"></span>
-                <span>Yogurt</span>
+                <span>Honey</span>
               </label>
             </div>
           </div>
@@ -247,8 +249,8 @@
         <div class="checkout-content">
           <h2 class="screen-title">Checkout</h2>
 
-         
-           <div class="section">
+          <!-- Pick-Up Time -->
+          <div class="section">
             <h3 class="section-title">Pick-Up Time</h3>
             <button class="pickup-option active" data-pickup="asap">
               <span>ASAP (10-15 Minutes)</span>
@@ -369,6 +371,11 @@
               <p class="clock-label">Pick-up Time</p>
               <p class="clock-time" id="pickupTime">12:40 PM</p>
             </div>
+            <!-- Decorative fruits -->
+            <img src="./img/fruit_decor_1.avif" alt="raspberry" class="fruit-decor fruit-1">
+            <img src="./img/fruit_decor_2.avif" alt="banana" class="fruit-decor fruit-2">
+            <img src="./img/fruit_decor_3.avif" alt="strawberry" class="fruit-decor fruit-3">
+            <img src="./img/fruit_decor_4.avif" alt="blueberry" class="fruit-decor fruit-4">
           </div>
 
           <div class="confirmation-summary">

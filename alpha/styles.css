@@ -173,63 +173,6 @@ html{
   font-weight: 700;
 }
 
-/* Order Status Banner */
-.order-status-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  background-color: var(--off-white);
-  border-bottom: 1.5px solid rgba(221, 51, 91, 0.2);
-  cursor: pointer;
-  overflow: hidden;
-  max-height: 0;
-  opacity: 0;
-  padding: 0 20px;
-  transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.4s ease;
-}
-
-.order-status-banner.visible {
-  max-height: 60px;
-  opacity: 1;
-  padding: 11px 20px;
-}
-
-.order-status-banner:active {
-  background-color: #ffe8ed;
-}
-
-.order-status-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 0;
-}
-
-.order-status-icon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  color: var(--dragonfruit);
-}
-
-.order-status-text {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--dragonfruit);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.order-status-chevron {
-  width: 20px;
-  height: 20px;
-  color: var(--dragonfruit);
-  flex-shrink: 0;
-}
-
 .welcome-section {
   padding: 16px 0;
 }

@@ -173,68 +173,82 @@ html{
   font-weight: 700;
 }
 
-/* ── Order Status Banner ─────────────────────────────── */
+/* Order Status Banner */
 .order-status-banner {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe8ec 100%);
+  border-bottom: 2px solid var(--dragonfruit);
+  padding: 16px 24px;
+  transition: all 0.3s ease;
+}
+
+.order-status-banner.hidden {
+  display: none;
+}
+
+.order-status-content {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  background-color: var(--off-white);
-  border-bottom: 1.5px solid rgba(221, 51, 91, 0.2);
-  padding: 11px 20px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  /* hidden by default */
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.4s ease;
-  padding-top: 0;
-  padding-bottom: 0;
+  align-items: center;
+  gap: 16px;
 }
 
-.order-status-banner.visible {
-  max-height: 80px;
-  opacity: 1;
-  padding: 11px 20px;
-}
-
-.order-status-banner:active {
-  background-color: #ffe8ed;
-}
-
-.order-status-left {
+.order-status-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex: 1;
-  min-width: 0;
 }
 
 .order-status-icon {
-  width: 20px;
-  height: 20px;
+  width: 40px;
+  height: 40px;
+  background: var(--dragonfruit);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
   flex-shrink: 0;
-  color: var(--dragonfruit);
+}
+
+.order-status-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
 .order-status-text {
-  font-size: 15px;
+  flex: 1;
+}
+
+.order-status-title {
+  font-size: 16px;
   font-weight: 700;
-  color: var(--dragonfruit);
+  color: #1a1a1a;
+  margin-bottom: 2px;
+}
+
+.order-status-time {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+}
+
+.view-order-btn {
+  background: var(--dragonfruit);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  transition: all 0.2s;
 }
 
-.order-status-chevron {
-  width: 20px;
-  height: 20px;
-  color: var(--dragonfruit);
-  flex-shrink: 0;
+.view-order-btn:active {
+  transform: scale(0.95);
 }
-
-/* ── End Order Status Banner ─────────────────────────── */
 
 .welcome-section {
   padding: 16px 0;
@@ -702,35 +716,33 @@ html{
   transition: all 0.2s;
 }
 
-/* ── Sticky Checkout Button ──────────────────────────── */
 .cart-summary {
-  position: fixed;
-  bottom: 80px; /* sits right on top of the nav bar */
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
+  position: sticky;
+  bottom: 100px;
   width: calc(100% - 48px);
   max-width: 382px;
+  margin: 0 auto;
   background: white;
   border: 1px solid #e0e0e0;
   border-radius: 16px;
-  padding: 16px 20px;
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.1);
-  z-index: 200;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 50;
   opacity: 0;
+  transform: translateY(20px);
   pointer-events: none;
-  transition: opacity 0.3s, transform 0.3s;
+  transition: all 0.3s;
 }
 
 .cart-summary.show {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
   pointer-events: all;
 }
 
 .cart-summary.hidden {
   display: none;
 }
-/* ── End Sticky Checkout Button ──────────────────────── */
 
 .summary-row {
   display: flex;
@@ -1235,7 +1247,7 @@ html{
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--dragonfruit);
+  background: #dd335b;
   border-radius: 3px;
 }
 
