@@ -500,18 +500,8 @@ html{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.3s;
   box-shadow: 0 4px 12px rgba(221, 51, 91, 0.3);
   z-index: 50;
-  opacity: 0;
-  transform: translateY(20px);
-  pointer-events: none;
-}
-
-.add-to-bag-btn.show {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: all;
 }
 
 .add-to-bag-btn:active {

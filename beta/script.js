@@ -131,24 +131,6 @@ function showConfirmationScreen(order) {
   navigateTo('confirmation');
 }
 
-//  Scroll Handlers 
-
-function initializeScrollHandlers() {
-  const customizeScreen = document.getElementById('customizeScreen');
-  const addToBagBtn = document.getElementById('addToBagBtn');
-
-  customizeScreen.addEventListener('scroll', () => {
-    const scrollTop = customizeScreen.scrollTop;
-    const scrollHeight = customizeScreen.scrollHeight;
-    const clientHeight = customizeScreen.clientHeight;
-
-    if (scrollTop > 200 || (scrollHeight - scrollTop - clientHeight) < 100) {
-      addToBagBtn.classList.add('show');
-    } else {
-      addToBagBtn.classList.remove('show');
-    }
-  });
-}
 
 // ─── Apple Pay Modal ─────────────────────────────────────────────────────────
 
@@ -400,7 +382,6 @@ function navigateTo(screen) {
 
   if (screen === 'customize') {
     screens.customize.scrollTop = 0;
-    addToBagBtn.classList.remove('show');
   }
 
   if (screen === 'bag') {
