@@ -3,7 +3,7 @@ let currentScreen = 'home';
 let cartItems = [];
 let editingItem = null;
 let navTimeout = null;
-let lastOrder = null; // track last placed order for status banner
+let lastOrder = null;
 let currentSmoothie = {
   name: 'Custom Smoothie',
   size: 'Medium',
@@ -69,12 +69,11 @@ const returnHomeBtn = document.getElementById('returnHomeBtn');
 document.addEventListener('DOMContentLoaded', () => {
   initializeEventListeners();
   updateCartBadge();
-  initializeScrollHandlers();
   injectApplePayModal();
   initializeOrderStatusBanner();
 });
 
-//  Order Status Banner 
+// ─── Order Status Banner ─────────────────────────────────────────────────────
 
 function initializeOrderStatusBanner() {
   const banner = document.getElementById('orderStatusBanner');
@@ -108,7 +107,6 @@ function hideOrderStatusBanner() {
   lastOrder = null;
 }
 
-// Re-render confirmation screen from saved order data and navigate to it
 function showConfirmationScreen(order) {
   document.getElementById('pickupTime').textContent = order.pickupTime;
   document.getElementById('orderNumber').textContent = order.orderNumber;
@@ -130,7 +128,6 @@ function showConfirmationScreen(order) {
 
   navigateTo('confirmation');
 }
-
 
 // ─── Apple Pay Modal ─────────────────────────────────────────────────────────
 
@@ -209,15 +206,14 @@ function openApplePaySheet() {
   const total = subtotal + tax + tipAmount;
 
   document.getElementById('apAmount').textContent = `$${total.toFixed(2)}`;
-
   document.getElementById('apFaceIdSection').classList.remove('hidden');
   document.getElementById('apSuccessSection').classList.add('hidden');
   document.getElementById('apFaceIdRing').classList.remove('scanning', 'success');
   document.getElementById('apFaceIdLabel').textContent = 'Double-click to pay';
   document.getElementById('apFaceIdIcon').classList.remove('scanning');
   document.getElementById('apCancelBtn').classList.remove('hidden');
-
   document.getElementById('applePayOverlay').classList.add('active');
+
   setTimeout(() => simulateFaceIdScan(), 600);
 }
 
@@ -271,7 +267,7 @@ function closeApplePaySheet() {
   document.getElementById('applePayOverlay').classList.remove('active');
 }
 
-//  Event Listeners 
+// ─── Event Listeners ─────────────────────────────────────────────────────────
 
 function initializeEventListeners() {
   bagBtn.addEventListener('click', () => {
@@ -344,7 +340,6 @@ function initializeEventListeners() {
   }
 
   if (returnHomeBtn) {
-    // "Return Home" keeps the banner visible — don't clear lastOrder here
     returnHomeBtn.addEventListener('click', () => {
       cartItems = [];
       updateCartBadge();
@@ -366,7 +361,7 @@ function cancelPendingNavigation() {
   }
 }
 
-//  Navigation 
+// ─── Navigation ──────────────────────────────────────────────────────────────
 
 function navigateTo(screen) {
   Object.values(screens).forEach(s => s.classList.remove('active'));
@@ -390,7 +385,7 @@ function navigateTo(screen) {
   }
 }
 
-//  Smoothie 
+// ─── Smoothie ────────────────────────────────────────────────────────────────
 
 function selectSmoothie(name) {
   const data = smoothieData[name];
@@ -440,7 +435,7 @@ function updateCartBadge() {
   cartBadge.classList.toggle('hidden', count === 0);
 }
 
-//  Cart 
+// ─── Cart ─────────────────────────────────────────────────────────────────────
 
 function addToCart() {
   const addOnPrice = currentSmoothie.addOns.length * 1.00;
@@ -531,7 +526,7 @@ function renderCartItems() {
   document.getElementById('subtotalAmount').textContent = `$${subtotal.toFixed(2)}`;
 }
 
-//  Checkout 
+// ─── Checkout ─────────────────────────────────────────────────────────────────
 
 function initializeCheckoutListeners() {
   populateTimeOptions();
@@ -568,21 +563,39 @@ function initializeCheckoutListeners() {
     });
   });
 
+  // Tip buttons with custom input support
   document.querySelectorAll('.tip-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const tipValue = btn.dataset.tip;
+      const customWrapper = document.getElementById('customTipWrapper');
+      const customInput = document.getElementById('customTipInput');
+
       if (tipValue === 'custom') {
         checkoutState.tipPercentage = 0;
-        checkoutState.customTip = 1.00;
+        checkoutState.customTip = parseFloat(customInput.value) || 0;
+        customWrapper.classList.add('visible');
+        customInput.focus();
       } else {
         checkoutState.tipPercentage = parseInt(tipValue);
         checkoutState.customTip = 0;
+        customWrapper.classList.remove('visible');
+        if (customInput) customInput.value = '';
       }
       updateCheckoutTotals();
     });
   });
+
+  // Custom tip live update
+  const customTipInput = document.getElementById('customTipInput');
+  if (customTipInput) {
+    customTipInput.addEventListener('input', (e) => {
+      checkoutState.customTip = parseFloat(e.target.value) || 0;
+      checkoutState.tipPercentage = 0;
+      updateCheckoutTotals();
+    });
+  }
 
   const pickupNameInput = document.getElementById('pickupName');
   if (pickupNameInput) {
@@ -653,11 +666,27 @@ function renderCheckoutScreen() {
   document.getElementById('checkoutTip').textContent = `$${tipAmount.toFixed(2)}`;
   document.getElementById('checkoutTotal').textContent = `$${totalAmount.toFixed(2)}`;
 
+  // Reset pickup time
   document.querySelectorAll('.pickup-option').forEach(b => b.classList.remove('active'));
   const asapBtn = document.querySelector('.pickup-option[data-pickup="asap"]');
   if (asapBtn) asapBtn.classList.add('active');
   checkoutState.pickupTime = 'asap';
   document.getElementById('timePickerDropdown').classList.add('hidden');
+
+  // Reset tip to 20% default
+  document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('active'));
+  const defaultTipBtn = document.querySelector('.tip-btn[data-tip="20"]');
+  if (defaultTipBtn) defaultTipBtn.classList.add('active');
+  checkoutState.tipPercentage = 20;
+  checkoutState.customTip = 0;
+
+  // Reset custom tip input
+  const customTipWrapper = document.getElementById('customTipWrapper');
+  const customTipInput = document.getElementById('customTipInput');
+  if (customTipWrapper) customTipWrapper.classList.remove('visible');
+  if (customTipInput) customTipInput.value = '';
+
+  // Reset place order button
   document.getElementById('placeOrderBtn').textContent = 'Place Order';
 }
 
@@ -670,7 +699,7 @@ function updateCheckoutTotals() {
   document.getElementById('checkoutTotal').textContent = `$${totalAmount.toFixed(2)}`;
 }
 
-//  Place Order 
+// ─── Place Order ──────────────────────────────────────────────────────────────
 
 function placeOrder() {
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -728,7 +757,7 @@ function placeOrder() {
   }, 500);
 }
 
-// toast 
+// ─── Toast ────────────────────────────────────────────────────────────────────
 
 function showToast(title, message, type = 'success') {
   const toastContainer = document.getElementById('toastContainer');

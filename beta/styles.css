@@ -944,6 +944,42 @@ html{
   color: white;
 }
 
+.custom-tip-input-wrapper {
+  display: none;
+  margin-top: 12px;
+  position: relative;
+  align-items: center;
+}
+
+.custom-tip-input-wrapper.visible {
+  display: flex;
+}
+
+.custom-tip-prefix {
+  position: absolute;
+  left: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.custom-tip-input {
+  width: 100%;
+  height: 48px;
+  border: 2px solid var(--dragonfruit);
+  border-radius: 12px;
+  padding: 0 16px 0 30px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  font-family: 'Nunito', sans-serif;
+  outline: none;
+}
+
+.custom-tip-input:focus {
+  border-color: var(--dark-dragonfruit);
+}
+
 .checkout-order-items {
   margin-bottom: 16px;
 }
