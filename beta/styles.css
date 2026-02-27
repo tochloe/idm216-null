@@ -483,9 +483,11 @@ html{
   font-weight: 700;
 }
 
+/* ─── Add to Bag / Update Item Button ─────────────────────────────────────── */
+
 .add-to-bag-btn {
   position: sticky;
-  bottom: 100px;
+  bottom: 16px;
   width: calc(100% - 48px);
   max-width: 382px;
   margin: 0 auto;
@@ -502,10 +504,17 @@ html{
   align-items: center;
   box-shadow: 0 4px 12px rgba(221, 51, 91, 0.3);
   z-index: 50;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
 }
 
 .add-to-bag-btn:active {
   transform: scale(0.95);
+}
+
+/* Edit mode — shift to a teal/green to signal "save" action */
+.add-to-bag-btn.editing {
+  background-color: #1a9e72;
+  box-shadow: 0 4px 12px rgba(26, 158, 114, 0.35);
 }
 
 /* Bag Screen */
@@ -528,6 +537,7 @@ html{
   padding: 16px;
   display: flex;
   gap: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .cart-item-image {
@@ -665,6 +675,8 @@ html{
   color: #dd335b;
 }
 
+/* ─── Item Action Buttons (Edit / Remove) ─────────────────────────────────── */
+
 .item-actions {
   display: flex;
   gap: 8px;
@@ -672,15 +684,49 @@ html{
 }
 
 .item-action-btn {
-  padding: 6px 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  background: white;
-  color: #666;
+  padding: 6px 14px;
+  border-radius: 8px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.18s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1;
+}
+
+/* Edit button — outlined dragonfruit */
+.item-action-btn.edit-btn {
+  border: 1.5px solid var(--dragonfruit);
+  background: var(--off-white);
+  color: var(--dragonfruit);
+}
+
+.item-action-btn.edit-btn:hover {
+  background: var(--dragonfruit);
+  color: white;
+}
+
+.item-action-btn.edit-btn:active {
+  transform: scale(0.94);
+}
+
+/* Remove button — subtle grey */
+.item-action-btn.remove-btn {
+  border: 1px solid #e0e0e0;
+  background: white;
+  color: #888;
+}
+
+.item-action-btn.remove-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: #fff5f5;
+}
+
+.item-action-btn.remove-btn:active {
+  transform: scale(0.94);
 }
 
 .empty-cart {
@@ -708,7 +754,7 @@ html{
 
 .cart-summary {
   position: sticky;
-  bottom: 100px;
+  bottom: 16px;
   width: calc(100% - 48px);
   max-width: 382px;
   margin: 0 auto;
@@ -719,10 +765,6 @@ html{
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   z-index: 50;
   transition: all 0.3s;
-}
-
-.cart-summary.hidden {
-  display: none;
 }
 
 .cart-summary.hidden {
@@ -1597,4 +1639,3 @@ html{
 .hidden {
   display: none !important;
 }
-

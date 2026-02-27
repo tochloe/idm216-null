@@ -1,7 +1,7 @@
 // App State
 let currentScreen = 'home';
 let cartItems = [];
-let editingItem = null;
+let editingItem = null; // tracks the cart item being edited
 let navTimeout = null;
 let lastOrder = null;
 let currentSmoothie = {
@@ -277,7 +277,14 @@ function initializeEventListeners() {
 
   backBtn.addEventListener('click', () => {
     cancelPendingNavigation();
-    navigateTo('home');
+    // If editing, go back to bag; otherwise go home
+    if (editingItem) {
+      editingItem = null;
+      resetCustomizeScreenToDefault();
+      navigateTo('bag');
+    } else {
+      navigateTo('home');
+    }
   });
 
   backFromBagBtn.addEventListener('click', () => navigateTo('home'));
@@ -320,7 +327,13 @@ function initializeEventListeners() {
     });
   });
 
-  addToBagBtn.addEventListener('click', () => addToCart());
+  addToBagBtn.addEventListener('click', () => {
+    if (editingItem) {
+      saveEditedItem();
+    } else {
+      addToCart();
+    }
+  });
 
   if (checkoutBtn) {
     checkoutBtn.addEventListener('click', () => {
@@ -398,22 +411,43 @@ function selectSmoothie(name) {
     image: data.image
   };
 
-  document.getElementById('customizeTitle').textContent = name;
-  document.getElementById('customizeImage').src = data.image;
+  editingItem = null; // clear any editing state
+  updateCustomizeScreen();
+  navigateTo('customize');
+}
 
+function updateCustomizeScreen() {
+  const data = smoothieData[currentSmoothie.name] || smoothieData['Custom Smoothie'];
+
+  document.getElementById('customizeTitle').textContent = currentSmoothie.name;
+  document.getElementById('customizeImage').src = currentSmoothie.image || data.image;
+
+  // Update size buttons
+  document.querySelectorAll('.size-btn').forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.dataset.size === currentSmoothie.size) btn.classList.add('active');
+  });
+
+  // Update ingredient checkboxes
+  document.querySelectorAll('.ingredient-checkbox').forEach(cb => {
+    cb.checked = currentSmoothie.ingredients.includes(cb.value);
+  });
+
+  // Update add-on checkboxes
+  document.querySelectorAll('.addon-checkbox').forEach(cb => {
+    cb.checked = currentSmoothie.addOns.includes(cb.value);
+  });
+
+  updateAddToBagButton();
+}
+
+function resetCustomizeScreenToDefault() {
   document.querySelectorAll('.size-btn').forEach(btn => {
     btn.classList.remove('active');
     if (btn.dataset.size === 'Medium') btn.classList.add('active');
   });
-
-  document.querySelectorAll('.ingredient-checkbox').forEach(cb => {
-    cb.checked = data.defaultIngredients.includes(cb.value);
-  });
-
+  document.querySelectorAll('.ingredient-checkbox').forEach(cb => { cb.checked = false; });
   document.querySelectorAll('.addon-checkbox').forEach(cb => { cb.checked = false; });
-
-  updateAddToBagButton();
-  navigateTo('customize');
 }
 
 function updateIngredients() {
@@ -425,14 +459,78 @@ function updateAddOns() {
 }
 
 function updateAddToBagButton() {
-  const total = currentSmoothie.price + currentSmoothie.addOns.length;
-  document.getElementById('addToBagPrice').textContent = `$${total.toFixed(2)}`;
+  const addOnPrice = currentSmoothie.addOns ? currentSmoothie.addOns.length : 0;
+  const total = currentSmoothie.price + addOnPrice;
+  const addToBagText = document.getElementById('addToBagText');
+  const addToBagPrice = document.getElementById('addToBagPrice');
+
+  if (editingItem) {
+    addToBagText.textContent = 'Update Item';
+    addToBagBtn.classList.add('editing');
+  } else {
+    addToBagText.textContent = 'Add to Bag';
+    addToBagBtn.classList.remove('editing');
+  }
+
+  addToBagPrice.textContent = `$${total.toFixed(2)}`;
 }
 
 function updateCartBadge() {
   const count = cartItems.length;
   cartBadge.textContent = count;
   cartBadge.classList.toggle('hidden', count === 0);
+}
+
+// ─── Edit Cart Item ───────────────────────────────────────────────────────────
+
+function editCartItem(id) {
+  const item = cartItems.find(i => i.id === id);
+  if (!item) return;
+
+  editingItem = id;
+
+  // Determine the base size price
+  const sizePrices = { Small: 4.50, Medium: 5.50, Large: 6.50 };
+  const addonCount = item.addOns.length;
+  const basePrice = sizePrices[item.size] || 5.50;
+
+  currentSmoothie = {
+    name: item.name,
+    size: item.size,
+    price: basePrice,
+    ingredients: [...item.ingredients],
+    addOns: [...item.addOns],
+    image: item.image
+  };
+
+  updateCustomizeScreen();
+  navigateTo('customize');
+}
+
+function saveEditedItem() {
+  const item = cartItems.find(i => i.id === editingItem);
+  if (!item) return;
+
+  // Sync latest checkbox state
+  currentSmoothie.ingredients = Array.from(document.querySelectorAll('.ingredient-checkbox:checked')).map(cb => cb.value);
+  currentSmoothie.addOns = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value);
+
+  const addOnPrice = currentSmoothie.addOns.length * 1.00;
+  const totalPrice = currentSmoothie.price + addOnPrice;
+
+  item.name = currentSmoothie.name;
+  item.size = currentSmoothie.size;
+  item.price = totalPrice;
+  item.ingredients = [...currentSmoothie.ingredients];
+  item.addOns = [...currentSmoothie.addOns];
+  item.image = currentSmoothie.image;
+
+  editingItem = null;
+  addToBagBtn.classList.remove('editing');
+  document.getElementById('addToBagText').textContent = 'Add to Bag';
+
+  showToast('Item Updated', `${item.name} has been updated!`, 'success');
+  navigateTo('bag');
 }
 
 // ─── Cart ─────────────────────────────────────────────────────────────────────
@@ -496,8 +594,15 @@ function renderCartItems() {
   emptyMessage.style.display = 'none';
   summary.classList.remove('hidden');
 
-  container.innerHTML = cartItems.map(item => `
-    <div class="cart-item">
+  container.innerHTML = cartItems.map(item => {
+    const allItems = [
+      ...item.ingredients,
+      ...item.addOns
+    ].filter(Boolean);
+    const detailsText = allItems.length > 0 ? allItems.join(', ') : 'No ingredients selected';
+
+    return `
+    <div class="cart-item" id="cart-item-${item.id}">
       <img src="${item.image}" alt="${item.name}" class="cart-item-image">
       <div class="cart-item-details">
         <div class="cart-item-header">
@@ -506,7 +611,7 @@ function renderCartItems() {
             <div class="cart-item-size">${item.size}</div>
           </div>
         </div>
-        <div class="cart-item-ingredients">${item.ingredients.join(', ')}${item.addOns.length > 0 ? ' + ' + item.addOns.join(', ') : ''}</div>
+        <div class="cart-item-ingredients">${detailsText}</div>
         <div class="cart-item-footer">
           <div class="number-button" role="group" aria-label="Quantity selector">
             <button class="step-btn minus" aria-label="Decrease quantity" onclick="updateQuantity('${item.id}', -1)">−</button>
@@ -516,11 +621,18 @@ function renderCartItems() {
           <div class="cart-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
         </div>
         <div class="item-actions">
-          <button class="item-action-btn" onclick="removeFromCart('${item.id}')">Remove</button>
+          <button class="item-action-btn edit-btn" onclick="editCartItem('${item.id}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Edit
+          </button>
+          <button class="item-action-btn remove-btn" onclick="removeFromCart('${item.id}')">Remove</button>
         </div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   document.getElementById('subtotalAmount').textContent = `$${subtotal.toFixed(2)}`;
@@ -778,3 +890,4 @@ function showToast(title, message, type = 'success') {
 
 window.updateQuantity = updateQuantity;
 window.removeFromCart = removeFromCart;
+window.editCartItem = editCartItem;

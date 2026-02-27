@@ -431,12 +431,22 @@
     <!-- bottom nav -->
     <nav id="bottomNav" class="bottom-nav">
       <div class="nav-border"></div>
-      <button class="nav-btn active" data-tab="order">
-        <svg class="nav-icon" viewBox="0 0 32 32" fill="none">
-          <path d="M8 6C6.89543 6 6 6.89543 6 8V10C6 11.1046 6.89543 12 8 12H10C11.1046 12 12 11.1046 12 10V8C12 6.89543 11.1046 6 10 6H8ZM8 18C6.89543 18 6 18.8954 6 20V22C6 23.1046 6.89543 24 8 24H10C11.1046 24 12 23.1046 12 22V20C12 18.8954 11.1046 18 10 18H8ZM18 8C18 6.89543 18.8954 6 20 6H22C23.1046 6 24 6.89543 24 8V10C24 11.1046 23.1046 12 22 12H20C18.8954 12 18 11.1046 18 10V8ZM20 18C18.8954 18 18 18.8954 18 20V22C18 23.1046 18.8954 24 20 24H22C23.1046 24 24 23.1046 24 22V20C24 18.8954 23.1046 18 22 18H20Z" fill="currentColor"/>
-        </svg>
-        <span class="nav-label">Order</span>
-      </button>
+      
+<button class="nav-btn active" data-tab="order">
+  <svg class="nav-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- straw -->
+    <line x1="19" y1="4" x2="15" y2="13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+    <!-- cup body -->
+    <path d="M8 13H24L21.5 25.5C21.2 26.9 19.9 28 18.5 28H13.5C12.1 28 10.8 26.9 10.5 25.5L8 13Z" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+    <!-- lid -->
+    <path d="M6.5 11C6.5 10.17 7.17 9.5 8 9.5H24C24.83 9.5 25.5 10.17 25.5 11V13H6.5V11Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <!-- bubbles / fruit dots -->
+    <circle cx="13.5" cy="20" r="1.5" fill="currentColor" opacity="0.7"/>
+    <circle cx="18" cy="22.5" r="1.2" fill="currentColor" opacity="0.7"/>
+    <circle cx="16" cy="18" r="1" fill="currentColor" opacity="0.5"/>
+  </svg>
+  <span class="nav-label">Order</span>
+</button>
       <button class="nav-btn" data-tab="history">
         <svg class="nav-icon" viewBox="0 0 32 32" fill="none">
           <path d="M16 6V16L22 19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
