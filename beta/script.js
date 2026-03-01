@@ -1,14 +1,14 @@
 // App State
 let currentScreen = 'home';
 let cartItems = [];
-let editingItem = null; // tracks the cart item being edited
+let editingItem = null;
 let navTimeout = null;
 let lastOrder = null;
 let currentSmoothie = {
   name: 'Custom Smoothie',
   size: 'Medium',
   price: 5.50,
-  ingredients: ['Strawberry', 'Banana'],
+  ingredients: [],
   addOns: [],
   image: './img/smoothie.avif'
 };
@@ -25,53 +25,99 @@ let checkoutState = {
 
 // Smoothie data
 const smoothieData = {
-  'Custom Smoothie': {
-    image: './img/smoothie.avif',
-    defaultIngredients: []
-  },
-  'Fruit Salad': {
-    image: './img/fruit_salad.avif',
-    defaultIngredients: []
-  },
-  'P.B. Banana': {
-    image: './img/pb_banana.avif',
-    defaultIngredients: ['Banana', 'Peanut Butter']
-  },
-  'Taro': {
-    image: './img/taro.avif',
-    defaultIngredients: ['Taro']
-  }
+  'Custom Smoothie': { image: './img/smoothie.avif', defaultIngredients: [] },
+  'Fruit Salad':     { image: './img/fruit_salad.avif', defaultIngredients: [] },
+  'P.B. Banana':     { image: './img/pb_banana.avif', defaultIngredients: ['Banana', 'Peanut Butter'] },
+  'Taro':            { image: './img/taro.avif', defaultIngredients: ['Taro'] }
 };
+
+// Warm, time-of-day greeting
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 11)  return "Good morning! ☀️ Start your day right.";
+  if (h < 14)  return "Lunch break? You deserve a treat! 🍓";
+  if (h < 17)  return "Afternoon pick-me-up time! 🌿";
+  return "Evening blend? We've got you. 🌙";
+}
 
 // DOM Elements
 const screens = {
-  home: document.getElementById('homeScreen'),
-  customize: document.getElementById('customizeScreen'),
-  bag: document.getElementById('bagScreen'),
-  checkout: document.getElementById('checkoutScreen'),
+  home:         document.getElementById('homeScreen'),
+  customize:    document.getElementById('customizeScreen'),
+  bag:          document.getElementById('bagScreen'),
+  checkout:     document.getElementById('checkoutScreen'),
   confirmation: document.getElementById('confirmationScreen')
 };
 
-const bagBtn = document.getElementById('bagBtn');
-const backBtn = document.getElementById('backBtn');
-const backFromBagBtn = document.getElementById('backFromBagBtn');
-const backFromCheckoutBtn = document.getElementById('backFromCheckoutBtn');
-const cartBadge = document.getElementById('cartBadge');
-const navBtns = document.querySelectorAll('.nav-btn');
-const smoothieCards = document.querySelectorAll('.smoothie-card');
-const addToBagBtn = document.getElementById('addToBagBtn');
-const startShoppingBtn = document.getElementById('startShoppingBtn');
-const checkoutBtn = document.getElementById('checkoutBtn');
-const placeOrderBtn = document.getElementById('placeOrderBtn');
-const returnHomeBtn = document.getElementById('returnHomeBtn');
+const bagBtn             = document.getElementById('bagBtn');
+const backBtn            = document.getElementById('backBtn');
+const backFromBagBtn     = document.getElementById('backFromBagBtn');
+const backFromCheckoutBtn= document.getElementById('backFromCheckoutBtn');
+const cartBadge          = document.getElementById('cartBadge');
+const navBtns            = document.querySelectorAll('.nav-btn');
+const smoothieCards      = document.querySelectorAll('.smoothie-card');
+const addToBagBtn        = document.getElementById('addToBagBtn');
+const startShoppingBtn   = document.getElementById('startShoppingBtn');
+const checkoutBtn        = document.getElementById('checkoutBtn');
+const placeOrderBtn      = document.getElementById('placeOrderBtn');
+const returnHomeBtn      = document.getElementById('returnHomeBtn');
 
-// Initialize
 document.addEventListener('DOMContentLoaded', () => {
   initializeEventListeners();
   updateCartBadge();
   injectApplePayModal();
   initializeOrderStatusBanner();
+  injectConfirmationHero();
+
+  const title = document.querySelector('.welcome-title');
+  if (title) title.textContent = getGreeting();
 });
+
+
+function injectConfirmationHero() {
+  const confirmContent = document.querySelector('.confirmation-content');
+  if (!confirmContent) return;
+
+  confirmContent.innerHTML = `
+    <!-- Hero order number -->
+    <div class="confirm-hero">
+      <p class="confirm-hero-eyebrow">Your Order</p>
+      <div class="confirm-order-number" id="orderNumber">—</div>
+      <p class="confirm-order-label">Order Number</p>
+      <div class="confirm-pickup-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+        Pick up at <strong id="pickupTime" style="margin-left:4px">—</strong>
+      </div>
+    </div>
+
+    <!-- Friendly message -->
+    <p class="confirm-message">KC's on it! 🍓</p>
+    <p class="confirm-submessage">Head over when you're ready — we'll have it waiting.</p>
+
+    <!-- Order summary card -->
+    <div class="confirmation-summary">
+      <h3 class="section-title" style="margin-bottom:14px">What's in your bag</h3>
+      <div id="confirmationOrderItems" class="confirmation-order-items"></div>
+      <div class="divider"></div>
+      <div class="summary-row"><span>Subtotal</span><span id="confirmSubtotal">$0.00</span></div>
+      <div class="summary-row"><span>Tax</span><span id="confirmTax">$0.00</span></div>
+      <div class="summary-row"><span>Tip</span><span id="confirmTip">$0.00</span></div>
+      <div class="summary-row total-row"><span>Total</span><span id="confirmTotal">$0.00</span></div>
+    </div>
+
+    <button id="returnHomeBtn" class="return-home-btn">Back to the Menu</button>
+  `;
+
+  // Re-attach return home listener since we replaced the DOM
+  document.getElementById('returnHomeBtn').addEventListener('click', () => {
+    cartItems = [];
+    updateCartBadge();
+    navigateTo('home');
+  });
+}
 
 // ─── Order Status Banner ─────────────────────────────────────────────────────
 
@@ -93,11 +139,11 @@ function initializeOrderStatusBanner() {
 
 function showOrderStatusBanner(orderData) {
   const banner = document.getElementById('orderStatusBanner');
-  const text = document.getElementById('orderStatusText');
+  const text   = document.getElementById('orderStatusText');
   if (!banner || !text) return;
 
   lastOrder = orderData;
-  text.textContent = `Order #${orderData.orderNumber} — picking up at ${orderData.pickupTime}`;
+  text.textContent = `Order #${orderData.orderNumber} — ready at ${orderData.pickupTime}`;
   banner.classList.add('visible');
 }
 
@@ -108,25 +154,34 @@ function hideOrderStatusBanner() {
 }
 
 function showConfirmationScreen(order) {
-  document.getElementById('pickupTime').textContent = order.pickupTime;
-  document.getElementById('orderNumber').textContent = order.orderNumber;
-
-  document.getElementById('confirmationOrderItems').innerHTML = order.items.map(item => `
-    <div class="order-item">
-      <div class="order-item-header">
-        <span>${item.quantity}x ${item.name}</span>
-        <span>$${(item.price * item.quantity).toFixed(2)}</span>
-      </div>
-      <div class="order-item-details">${item.size}, ${item.ingredients.join(', ')}</div>
-    </div>
-  `).join('');
-
-  document.getElementById('confirmSubtotal').textContent = `$${order.subtotal.toFixed(2)}`;
-  document.getElementById('confirmTax').textContent = `$${order.tax.toFixed(2)}`;
-  document.getElementById('confirmTip').textContent = `$${order.tip.toFixed(2)}`;
-  document.getElementById('confirmTotal').textContent = `$${order.total.toFixed(2)}`;
-
+  populateConfirmation(order);
   navigateTo('confirmation');
+}
+
+function populateConfirmation(order) {
+  const numEl  = document.getElementById('orderNumber');
+  const timeEl = document.getElementById('pickupTime');
+  if (numEl)  numEl.textContent  = order.orderNumber;
+  if (timeEl) timeEl.textContent = order.pickupTime;
+
+  const itemsEl = document.getElementById('confirmationOrderItems');
+  if (itemsEl) {
+    itemsEl.innerHTML = order.items.map(item => `
+      <div class="order-item">
+        <div class="order-item-header">
+          <span>${item.quantity}× ${item.name}</span>
+          <span>$${(item.price * item.quantity).toFixed(2)}</span>
+        </div>
+        <div class="order-item-details">${item.size}${item.ingredients.length ? ' · ' + item.ingredients.join(', ') : ''}</div>
+      </div>
+    `).join('');
+  }
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('confirmSubtotal', `$${order.subtotal.toFixed(2)}`);
+  set('confirmTax',      `$${order.tax.toFixed(2)}`);
+  set('confirmTip',      `$${order.tip.toFixed(2)}`);
+  set('confirmTotal',    `$${order.total.toFixed(2)}`);
 }
 
 // ─── Apple Pay Modal ─────────────────────────────────────────────────────────
@@ -149,15 +204,10 @@ function injectApplePayModal() {
       </div>
       <div class="ap-card-section">
         <div class="ap-card">
-          <div class="ap-card-top">
-            <div class="ap-card-bank">Chase</div>
-            <div class="ap-card-chip"></div>
-          </div>
+          <div class="ap-card-top"><div class="ap-card-bank">Chase</div><div class="ap-card-chip"></div></div>
           <div class="ap-card-bottom">
             <div class="ap-card-dots">•••• •••• •••• 4242</div>
-            <svg class="ap-visa" viewBox="0 0 48 16" fill="none">
-              <text x="0" y="14" font-family="Arial" font-size="16" font-weight="bold" fill="white">VISA</text>
-            </svg>
+            <svg class="ap-visa" viewBox="0 0 48 16" fill="none"><text x="0" y="14" font-family="Arial" font-size="16" font-weight="bold" fill="white">VISA</text></svg>
           </div>
         </div>
         <div class="ap-card-label">Visa ···· 4242</div>
@@ -194,16 +244,14 @@ function injectApplePayModal() {
 
   document.body.appendChild(modal);
   document.getElementById('apCancelBtn').addEventListener('click', closeApplePaySheet);
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeApplePaySheet();
-  });
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeApplePaySheet(); });
 }
 
 function openApplePaySheet() {
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const tax = subtotal * 0.08;
+  const subtotal  = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const tax       = subtotal * 0.08;
   const tipAmount = checkoutState.customTip || (subtotal * (checkoutState.tipPercentage / 100));
-  const total = subtotal + tax + tipAmount;
+  const total     = subtotal + tax + tipAmount;
 
   document.getElementById('apAmount').textContent = `$${total.toFixed(2)}`;
   document.getElementById('apFaceIdSection').classList.remove('hidden');
@@ -218,8 +266,8 @@ function openApplePaySheet() {
 }
 
 function simulateFaceIdScan() {
-  const ring = document.getElementById('apFaceIdRing');
-  const icon = document.getElementById('apFaceIdIcon');
+  const ring  = document.getElementById('apFaceIdRing');
+  const icon  = document.getElementById('apFaceIdIcon');
   const label = document.getElementById('apFaceIdLabel');
 
   label.textContent = 'Scanning...';
@@ -236,29 +284,26 @@ function simulateFaceIdScan() {
       document.getElementById('apCancelBtn').classList.add('hidden');
       document.getElementById('apSuccessSection').classList.remove('hidden');
 
-      const circle = document.querySelector('.ap-check-circle');
+      const circle    = document.querySelector('.ap-check-circle');
       const checkPath = document.querySelector('.ap-check-path');
-      circle.style.strokeDasharray = '176';
+      circle.style.strokeDasharray  = '176';
       circle.style.strokeDashoffset = '176';
-      checkPath.style.strokeDasharray = '40';
+      checkPath.style.strokeDasharray  = '40';
       checkPath.style.strokeDashoffset = '40';
 
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          circle.style.transition = 'stroke-dashoffset 0.4s ease';
-          circle.style.strokeDashoffset = '0';
-          setTimeout(() => {
-            checkPath.style.transition = 'stroke-dashoffset 0.3s ease';
-            checkPath.style.strokeDashoffset = '0';
-          }, 200);
-        });
-      });
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        circle.style.transition = 'stroke-dashoffset 0.4s ease';
+        circle.style.strokeDashoffset = '0';
+        setTimeout(() => {
+          checkPath.style.transition = 'stroke-dashoffset 0.3s ease';
+          checkPath.style.strokeDashoffset = '0';
+        }, 200);
+      }));
 
       setTimeout(() => {
         closeApplePaySheet();
         setTimeout(() => placeOrder(), 300);
       }, 1400);
-
     }, 300);
   }, 1800);
 }
@@ -277,7 +322,6 @@ function initializeEventListeners() {
 
   backBtn.addEventListener('click', () => {
     cancelPendingNavigation();
-    // If editing, go back to bag; otherwise go home
     if (editingItem) {
       editingItem = null;
       resetCustomizeScreenToDefault();
@@ -292,71 +336,43 @@ function initializeEventListeners() {
 
   navBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      if (btn.dataset.tab === 'order') {
-        cancelPendingNavigation();
-        navigateTo('home');
-      }
+      if (btn.dataset.tab === 'order') { cancelPendingNavigation(); navigateTo('home'); }
     });
   });
 
   smoothieCards.forEach(card => {
-    card.addEventListener('click', () => {
-      cancelPendingNavigation();
-      selectSmoothie(card.dataset.smoothie);
-    });
+    card.addEventListener('click', () => { cancelPendingNavigation(); selectSmoothie(card.dataset.smoothie); });
   });
 
   document.querySelectorAll('.size-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      currentSmoothie.size = btn.dataset.size;
+      currentSmoothie.size  = btn.dataset.size;
       currentSmoothie.price = parseFloat(btn.dataset.price);
       updateAddToBagButton();
     });
   });
 
-  document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', () => updateIngredients());
+  document.querySelectorAll('.ingredient-checkbox').forEach(cb => {
+    cb.addEventListener('change', () => updateIngredients());
   });
 
-  document.querySelectorAll('.addon-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
-      updateAddOns();
-      updateAddToBagButton();
-    });
+  document.querySelectorAll('.addon-checkbox').forEach(cb => {
+    cb.addEventListener('change', () => { updateAddOns(); updateAddToBagButton(); });
   });
 
   addToBagBtn.addEventListener('click', () => {
-    if (editingItem) {
-      saveEditedItem();
-    } else {
-      addToCart();
-    }
+    if (editingItem) { saveEditedItem(); } else { addToCart(); }
   });
 
   if (checkoutBtn) {
-    checkoutBtn.addEventListener('click', () => {
-      navigateTo('checkout');
-      renderCheckoutScreen();
-    });
+    checkoutBtn.addEventListener('click', () => { navigateTo('checkout'); renderCheckoutScreen(); });
   }
 
   if (placeOrderBtn) {
     placeOrderBtn.addEventListener('click', () => {
-      if (checkoutState.paymentMethod === 'apple') {
-        openApplePaySheet();
-      } else {
-        placeOrder();
-      }
-    });
-  }
-
-  if (returnHomeBtn) {
-    returnHomeBtn.addEventListener('click', () => {
-      cartItems = [];
-      updateCartBadge();
-      navigateTo('home');
+      if (checkoutState.paymentMethod === 'apple') { openApplePaySheet(); } else { placeOrder(); }
     });
   }
 
@@ -368,10 +384,7 @@ function initializeEventListeners() {
 }
 
 function cancelPendingNavigation() {
-  if (navTimeout !== null) {
-    clearTimeout(navTimeout);
-    navTimeout = null;
-  }
+  if (navTimeout !== null) { clearTimeout(navTimeout); navTimeout = null; }
 }
 
 // ─── Navigation ──────────────────────────────────────────────────────────────
@@ -388,14 +401,9 @@ function navigateTo(screen) {
     }
   });
 
-  if (screen === 'customize') {
-    screens.customize.scrollTop = 0;
-  }
-
-  if (screen === 'bag') {
-    renderCartItems();
-    screens.bag.scrollTop = 0;
-  }
+  if (screen === 'customize') screens.customize.scrollTop = 0;
+  if (screen === 'bag') { renderCartItems(); screens.bag.scrollTop = 0; }
+  if (screen === 'confirmation') screens.confirmation.scrollTop = 0;
 }
 
 // ─── Smoothie ────────────────────────────────────────────────────────────────
@@ -411,29 +419,23 @@ function selectSmoothie(name) {
     image: data.image
   };
 
-  editingItem = null; // clear any editing state
+  editingItem = null;
   updateCustomizeScreen();
   navigateTo('customize');
 }
 
 function updateCustomizeScreen() {
-  const data = smoothieData[currentSmoothie.name] || smoothieData['Custom Smoothie'];
-
   document.getElementById('customizeTitle').textContent = currentSmoothie.name;
-  document.getElementById('customizeImage').src = currentSmoothie.image || data.image;
+  document.getElementById('customizeImage').src = currentSmoothie.image;
 
-  // Update size buttons
   document.querySelectorAll('.size-btn').forEach(btn => {
-    btn.classList.remove('active');
-    if (btn.dataset.size === currentSmoothie.size) btn.classList.add('active');
+    btn.classList.toggle('active', btn.dataset.size === currentSmoothie.size);
   });
 
-  // Update ingredient checkboxes
   document.querySelectorAll('.ingredient-checkbox').forEach(cb => {
     cb.checked = currentSmoothie.ingredients.includes(cb.value);
   });
 
-  // Update add-on checkboxes
   document.querySelectorAll('.addon-checkbox').forEach(cb => {
     cb.checked = currentSmoothie.addOns.includes(cb.value);
   });
@@ -443,8 +445,7 @@ function updateCustomizeScreen() {
 
 function resetCustomizeScreenToDefault() {
   document.querySelectorAll('.size-btn').forEach(btn => {
-    btn.classList.remove('active');
-    if (btn.dataset.size === 'Medium') btn.classList.add('active');
+    btn.classList.toggle('active', btn.dataset.size === 'Medium');
   });
   document.querySelectorAll('.ingredient-checkbox').forEach(cb => { cb.checked = false; });
   document.querySelectorAll('.addon-checkbox').forEach(cb => { cb.checked = false; });
@@ -461,14 +462,15 @@ function updateAddOns() {
 function updateAddToBagButton() {
   const addOnPrice = currentSmoothie.addOns ? currentSmoothie.addOns.length : 0;
   const total = currentSmoothie.price + addOnPrice;
-  const addToBagText = document.getElementById('addToBagText');
+
+  const addToBagText  = document.getElementById('addToBagText');
   const addToBagPrice = document.getElementById('addToBagPrice');
 
   if (editingItem) {
-    addToBagText.textContent = 'Update Item';
+    addToBagText.textContent = 'Update My Order';
     addToBagBtn.classList.add('editing');
   } else {
-    addToBagText.textContent = 'Add to Bag';
+    addToBagText.textContent = 'Add to Bag 🛍️';
     addToBagBtn.classList.remove('editing');
   }
 
@@ -489,15 +491,11 @@ function editCartItem(id) {
 
   editingItem = id;
 
-  // Determine the base size price
   const sizePrices = { Small: 4.50, Medium: 5.50, Large: 6.50 };
-  const addonCount = item.addOns.length;
-  const basePrice = sizePrices[item.size] || 5.50;
-
   currentSmoothie = {
     name: item.name,
     size: item.size,
-    price: basePrice,
+    price: sizePrices[item.size] || 5.50,
     ingredients: [...item.ingredients],
     addOns: [...item.addOns],
     image: item.image
@@ -511,25 +509,23 @@ function saveEditedItem() {
   const item = cartItems.find(i => i.id === editingItem);
   if (!item) return;
 
-  // Sync latest checkbox state
   currentSmoothie.ingredients = Array.from(document.querySelectorAll('.ingredient-checkbox:checked')).map(cb => cb.value);
-  currentSmoothie.addOns = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value);
+  currentSmoothie.addOns      = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value);
 
-  const addOnPrice = currentSmoothie.addOns.length * 1.00;
-  const totalPrice = currentSmoothie.price + addOnPrice;
+  const totalPrice = currentSmoothie.price + (currentSmoothie.addOns.length * 1.00);
 
-  item.name = currentSmoothie.name;
-  item.size = currentSmoothie.size;
-  item.price = totalPrice;
+  item.name        = currentSmoothie.name;
+  item.size        = currentSmoothie.size;
+  item.price       = totalPrice;
   item.ingredients = [...currentSmoothie.ingredients];
-  item.addOns = [...currentSmoothie.addOns];
-  item.image = currentSmoothie.image;
+  item.addOns      = [...currentSmoothie.addOns];
+  item.image       = currentSmoothie.image;
 
   editingItem = null;
   addToBagBtn.classList.remove('editing');
-  document.getElementById('addToBagText').textContent = 'Add to Bag';
+  document.getElementById('addToBagText').textContent = 'Add to Bag 🛍️';
 
-  showToast('Item Updated', `${item.name} has been updated!`, 'success');
+  showToast('Looking good! ✨', `${item.name} has been updated.`, 'success');
   navigateTo('bag');
 }
 
@@ -540,31 +536,28 @@ function addToCart() {
   const totalPrice = currentSmoothie.price + addOnPrice;
 
   const item = {
-    id: Date.now().toString(),
-    name: currentSmoothie.name,
-    size: currentSmoothie.size,
-    price: totalPrice,
+    id:          Date.now().toString(),
+    name:        currentSmoothie.name,
+    size:        currentSmoothie.size,
+    price:       totalPrice,
     ingredients: [...currentSmoothie.ingredients],
-    addOns: [...currentSmoothie.addOns],
-    quantity: 1,
-    image: currentSmoothie.image
+    addOns:      [...currentSmoothie.addOns],
+    quantity:    1,
+    image:       currentSmoothie.image
   };
 
   cartItems.push(item);
   updateCartBadge();
-  showToast('Added to Bag', `${item.name} has been added to your bag!`, 'success');
+  showToast('Nice choice! 🎉', `${item.name} is in your bag.`, 'success');
 
-  navTimeout = setTimeout(() => {
-    navTimeout = null;
-    navigateTo('bag');
-  }, 1000);
+  navTimeout = setTimeout(() => { navTimeout = null; navigateTo('bag'); }, 1000);
 }
 
 function removeFromCart(id) {
   cartItems = cartItems.filter(item => item.id !== id);
   updateCartBadge();
   renderCartItems();
-  showToast('Removed', 'Item removed from your bag', 'success');
+  showToast('Removed', 'Item taken out of your bag.', 'success');
 }
 
 function updateQuantity(id, delta) {
@@ -573,16 +566,16 @@ function updateQuantity(id, delta) {
     item.quantity = Math.max(1, item.quantity + delta);
     renderCartItems();
     setTimeout(() => {
-      document.querySelectorAll(".number-button .value").forEach(v => v.classList.add("pop"));
-      setTimeout(() => document.querySelectorAll(".number-button .value").forEach(v => v.classList.remove("pop")), 200);
+      document.querySelectorAll('.number-button .value').forEach(v => v.classList.add('pop'));
+      setTimeout(() => document.querySelectorAll('.number-button .value').forEach(v => v.classList.remove('pop')), 220);
     }, 0);
   }
 }
 
 function renderCartItems() {
-  const container = document.getElementById('cartItemsContainer');
+  const container    = document.getElementById('cartItemsContainer');
   const emptyMessage = document.getElementById('emptyCartMessage');
-  const summary = document.getElementById('cartSummary');
+  const summary      = document.getElementById('cartSummary');
 
   if (cartItems.length === 0) {
     container.innerHTML = '';
@@ -595,11 +588,8 @@ function renderCartItems() {
   summary.classList.remove('hidden');
 
   container.innerHTML = cartItems.map(item => {
-    const allItems = [
-      ...item.ingredients,
-      ...item.addOns
-    ].filter(Boolean);
-    const detailsText = allItems.length > 0 ? allItems.join(', ') : 'No ingredients selected';
+    const allIngredients = [...item.ingredients, ...item.addOns].filter(Boolean);
+    const detailsText    = allIngredients.length ? allIngredients.join(', ') : 'No extras';
 
     return `
     <div class="cart-item" id="cart-item-${item.id}">
@@ -622,7 +612,7 @@ function renderCartItems() {
         </div>
         <div class="item-actions">
           <button class="item-action-btn edit-btn" onclick="editCartItem('${item.id}')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
             </svg>
@@ -638,7 +628,6 @@ function renderCartItems() {
   document.getElementById('subtotalAmount').textContent = `$${subtotal.toFixed(2)}`;
 }
 
-// ─── Checkout ─────────────────────────────────────────────────────────────────
 
 function initializeCheckoutListeners() {
   populateTimeOptions();
@@ -660,9 +649,7 @@ function initializeCheckoutListeners() {
 
   const scheduledTimeSelect = document.getElementById('scheduledTime');
   if (scheduledTimeSelect) {
-    scheduledTimeSelect.addEventListener('change', (e) => {
-      checkoutState.scheduledTime = e.target.value;
-    });
+    scheduledTimeSelect.addEventListener('change', (e) => { checkoutState.scheduledTime = e.target.value; });
   }
 
   document.querySelectorAll('.payment-option').forEach(btn => {
@@ -675,23 +662,22 @@ function initializeCheckoutListeners() {
     });
   });
 
-  // Tip buttons with custom input support
   document.querySelectorAll('.tip-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      const tipValue = btn.dataset.tip;
+      const tipValue    = btn.dataset.tip;
       const customWrapper = document.getElementById('customTipWrapper');
-      const customInput = document.getElementById('customTipInput');
+      const customInput   = document.getElementById('customTipInput');
 
       if (tipValue === 'custom') {
         checkoutState.tipPercentage = 0;
-        checkoutState.customTip = parseFloat(customInput.value) || 0;
+        checkoutState.customTip     = parseFloat(customInput.value) || 0;
         customWrapper.classList.add('visible');
         customInput.focus();
       } else {
         checkoutState.tipPercentage = parseInt(tipValue);
-        checkoutState.customTip = 0;
+        checkoutState.customTip     = 0;
         customWrapper.classList.remove('visible');
         if (customInput) customInput.value = '';
       }
@@ -699,11 +685,10 @@ function initializeCheckoutListeners() {
     });
   });
 
-  // Custom tip live update
   const customTipInput = document.getElementById('customTipInput');
   if (customTipInput) {
     customTipInput.addEventListener('input', (e) => {
-      checkoutState.customTip = parseFloat(e.target.value) || 0;
+      checkoutState.customTip     = parseFloat(e.target.value) || 0;
       checkoutState.tipPercentage = 0;
       updateCheckoutTotals();
     });
@@ -711,9 +696,7 @@ function initializeCheckoutListeners() {
 
   const pickupNameInput = document.getElementById('pickupName');
   if (pickupNameInput) {
-    pickupNameInput.addEventListener('input', (e) => {
-      checkoutState.pickupName = e.target.value;
-    });
+    pickupNameInput.addEventListener('input', (e) => { checkoutState.pickupName = e.target.value; });
   }
 }
 
@@ -721,103 +704,93 @@ function populateTimeOptions() {
   const select = document.getElementById('scheduledTime');
   if (!select) return;
 
-  const now = new Date();
-  let startTime = new Date(now);
+  const now      = new Date();
+  let startTime  = new Date(now);
   startTime.setMinutes(now.getMinutes() + 30);
 
-  const minutes = startTime.getMinutes();
+  const minutes       = startTime.getMinutes();
   const roundedMinutes = minutes <= 30 ? 30 : 60;
   startTime.setMinutes(roundedMinutes);
-  if (roundedMinutes === 60) {
-    startTime.setHours(startTime.getHours() + 1);
-    startTime.setMinutes(0);
-  }
+  if (roundedMinutes === 60) { startTime.setHours(startTime.getHours() + 1); startTime.setMinutes(0); }
 
   const endHour = 17;
   select.innerHTML = '';
   let currentTime = new Date(startTime);
 
   while (currentTime.getHours() < endHour || (currentTime.getHours() === endHour && currentTime.getMinutes() === 0)) {
-    const h = currentTime.getHours();
-    const m = currentTime.getMinutes();
-    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h  = currentTime.getHours();
+    const m  = currentTime.getMinutes();
+    const ap = h >= 12 ? 'PM' : 'AM';
     const dh = h % 12 || 12;
     const dm = m.toString().padStart(2, '0');
-    const timeString = `${dh}:${dm} ${ampm}`;
-    const option = document.createElement('option');
-    option.value = timeString;
-    option.textContent = timeString;
-    select.appendChild(option);
+    const ts = `${dh}:${dm} ${ap}`;
+    const opt = document.createElement('option');
+    opt.value = ts; opt.textContent = ts;
+    select.appendChild(opt);
     currentTime.setMinutes(currentTime.getMinutes() + 30);
     if (currentTime.getHours() > endHour) break;
   }
 
-  if (select.options.length > 0) {
-    checkoutState.scheduledTime = select.options[0].value;
-  }
+  if (select.options.length > 0) checkoutState.scheduledTime = select.options[0].value;
 }
 
 function renderCheckoutScreen() {
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const tax = subtotal * 0.08;
+  const subtotal  = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const tax       = subtotal * 0.08;
   const tipAmount = checkoutState.customTip || (subtotal * (checkoutState.tipPercentage / 100));
-  const totalAmount = subtotal + tax + tipAmount;
+  const total     = subtotal + tax + tipAmount;
 
   document.getElementById('checkoutOrderItems').innerHTML = cartItems.map(item => `
     <div class="order-item">
       <div class="order-item-header">
-        <span>${item.quantity}x ${item.name}</span>
+        <span>${item.quantity}× ${item.name}</span>
         <span>$${(item.price * item.quantity).toFixed(2)}</span>
       </div>
-      <div class="order-item-details">${item.size}, ${item.ingredients.join(', ')}</div>
+      <div class="order-item-details">${item.size}${item.ingredients.length ? ' · ' + item.ingredients.join(', ') : ''}</div>
     </div>
   `).join('');
 
   document.getElementById('checkoutSubtotal').textContent = `$${subtotal.toFixed(2)}`;
-  document.getElementById('checkoutTax').textContent = `$${tax.toFixed(2)}`;
-  document.getElementById('checkoutTip').textContent = `$${tipAmount.toFixed(2)}`;
-  document.getElementById('checkoutTotal').textContent = `$${totalAmount.toFixed(2)}`;
+  document.getElementById('checkoutTax').textContent      = `$${tax.toFixed(2)}`;
+  document.getElementById('checkoutTip').textContent      = `$${tipAmount.toFixed(2)}`;
+  document.getElementById('checkoutTotal').textContent    = `$${total.toFixed(2)}`;
 
-  // Reset pickup time
   document.querySelectorAll('.pickup-option').forEach(b => b.classList.remove('active'));
   const asapBtn = document.querySelector('.pickup-option[data-pickup="asap"]');
   if (asapBtn) asapBtn.classList.add('active');
   checkoutState.pickupTime = 'asap';
   document.getElementById('timePickerDropdown').classList.add('hidden');
 
-  // Reset tip to 20% default
   document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('active'));
   const defaultTipBtn = document.querySelector('.tip-btn[data-tip="20"]');
   if (defaultTipBtn) defaultTipBtn.classList.add('active');
   checkoutState.tipPercentage = 20;
-  checkoutState.customTip = 0;
+  checkoutState.customTip     = 0;
 
-  // Reset custom tip input
   const customTipWrapper = document.getElementById('customTipWrapper');
-  const customTipInput = document.getElementById('customTipInput');
+  const customTipInput   = document.getElementById('customTipInput');
   if (customTipWrapper) customTipWrapper.classList.remove('visible');
-  if (customTipInput) customTipInput.value = '';
+  if (customTipInput)   customTipInput.value = '';
 
-  // Reset place order button
   document.getElementById('placeOrderBtn').textContent = 'Place Order';
 }
 
 function updateCheckoutTotals() {
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const tax = subtotal * 0.08;
+  const subtotal  = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const tax       = subtotal * 0.08;
   const tipAmount = checkoutState.customTip || (subtotal * (checkoutState.tipPercentage / 100));
-  const totalAmount = subtotal + tax + tipAmount;
-  document.getElementById('checkoutTip').textContent = `$${tipAmount.toFixed(2)}`;
-  document.getElementById('checkoutTotal').textContent = `$${totalAmount.toFixed(2)}`;
+  const total     = subtotal + tax + tipAmount;
+  document.getElementById('checkoutTip').textContent   = `$${tipAmount.toFixed(2)}`;
+  document.getElementById('checkoutTotal').textContent = `$${total.toFixed(2)}`;
 }
 
 // ─── Place Order ──────────────────────────────────────────────────────────────
 
 function placeOrder() {
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const tax = subtotal * 0.08;
+  const subtotal  = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const tax       = subtotal * 0.08;
   const tipAmount = checkoutState.customTip || (subtotal * (checkoutState.tipPercentage / 100));
-  const totalAmount = subtotal + tax + tipAmount;
+  const total     = subtotal + tax + tipAmount;
 
   let pickupTimeStr;
   if (checkoutState.pickupTime === 'scheduled' && checkoutState.scheduledTime) {
@@ -825,43 +798,29 @@ function placeOrder() {
   } else {
     const now = new Date();
     now.setMinutes(now.getMinutes() + 15);
-    const h = now.getHours();
-    const m = now.getMinutes();
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    pickupTimeStr = `${h % 12 || 12}:${m.toString().padStart(2, '0')} ${ampm}`;
+    const h  = now.getHours();
+    const m  = now.getMinutes();
+    const ap = h >= 12 ? 'PM' : 'AM';
+    pickupTimeStr = `${h % 12 || 12}:${m.toString().padStart(2, '0')} ${ap}`;
   }
 
-  const orderNumber = Math.floor(Math.random() * 100) + 1;
+  const orderNumber = Math.floor(Math.random() * 98) + 1; // 1–98 for big, readable numbers
 
   const orderData = {
     orderNumber,
     pickupTime: pickupTimeStr,
     subtotal,
     tax,
-    tip: tipAmount,
-    total: totalAmount,
+    tip:   tipAmount,
+    total,
     items: cartItems.map(i => ({ ...i }))
   };
 
-  document.getElementById('pickupTime').textContent = pickupTimeStr;
-  document.getElementById('orderNumber').textContent = orderNumber;
+  populateConfirmation(orderData);
+  showToast("You're all set! 🍹", 'Your order is on its way to KC.', 'success');
 
-  document.getElementById('confirmationOrderItems').innerHTML = orderData.items.map(item => `
-    <div class="order-item">
-      <div class="order-item-header">
-        <span>${item.quantity}x ${item.name}</span>
-        <span>$${(item.price * item.quantity).toFixed(2)}</span>
-      </div>
-      <div class="order-item-details">${item.size}, ${item.ingredients.join(', ')}</div>
-    </div>
-  `).join('');
-
-  document.getElementById('confirmSubtotal').textContent = `$${subtotal.toFixed(2)}`;
-  document.getElementById('confirmTax').textContent = `$${tax.toFixed(2)}`;
-  document.getElementById('confirmTip').textContent = `$${tipAmount.toFixed(2)}`;
-  document.getElementById('confirmTotal').textContent = `$${totalAmount.toFixed(2)}`;
-
-  showToast('Order Placed', 'Your order has been placed successfully!', 'success');
+  cartItems = [];
+  updateCartBadge();
 
   setTimeout(() => {
     navigateTo('confirmation');
@@ -883,11 +842,11 @@ function showToast(title, message, type = 'success') {
   `;
   toastContainer.appendChild(toast);
   setTimeout(() => {
-    toast.style.animation = 'slideIn 0.3s ease-out reverse';
+    toast.style.animation = 'toastIn 0.3s ease-out reverse';
     setTimeout(() => toast.remove(), 300);
   }, 3000);
 }
 
-window.updateQuantity = updateQuantity;
-window.removeFromCart = removeFromCart;
-window.editCartItem = editCartItem;
+window.updateQuantity  = updateQuantity;
+window.removeFromCart  = removeFromCart;
+window.editCartItem    = editCartItem;

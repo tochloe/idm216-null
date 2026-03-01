@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed — KC's</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .confirm-hero {
+      text-align: center;
+      padding: 32px 24px 24px;
+      background: linear-gradient(160deg, var(--off-white) 0%, #ffe0e8 100%);
+      border-radius: 20px;
+      margin: 24px 24px 0;
+      border: 1.5px solid rgba(221, 51, 91, 0.15);
+    }
+    .confirm-hero-eyebrow {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dragonfruit);
+      margin-bottom: 8px;
+      opacity: 0.8;
+    }
+    .confirm-order-number {
+      font-size: 72px;
+      font-weight: 800;
+      color: var(--dragonfruit);
+      line-height: 1;
+      margin-bottom: 4px;
+      letter-spacing: -2px;
+    }
+    .confirm-order-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #999;
+      margin-bottom: 18px;
+    }
+    .confirm-pickup-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: white;
+      border: 1.5px solid rgba(221, 51, 91, 0.25);
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a1a;
+      box-shadow: 0 2px 8px rgba(221, 51, 91, 0.08);
+    }
+    .confirm-pickup-pill svg {
+      width: 16px;
+      height: 16px;
+      color: var(--dragonfruit);
+      flex-shrink: 0;
+    }
+    .confirm-message {
+      font-size: 22px;
+      font-weight: 800;
+      color: #1a1a1a;
+      text-align: center;
+      margin: 24px 24px 4px;
+    }
+    .confirm-submessage {
+      font-size: 15px;
+      font-weight: 600;
+      color: #999;
+      text-align: center;
+      margin: 0 24px 24px;
+      line-height: 1.5;
+    }
+    .confirmation-content .confirmation-summary {
+      margin: 0 24px 24px;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .confirmation-content .return-home-btn {
+      display: block;
+      margin: 0 24px 40px;
+      width: calc(100% - 48px);
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+
+  <header class="header">
+    <div class="header-content">
+      <a href="index.html"><img src="./img/KC's.svg" alt="KC's Smoothie Bar" class="logo"></a>
+      <div class="header-actions">
+        <a href="bag.html" class="icon-btn" aria-label="View bag">
+          <svg class="icon" viewBox="0 0 32 32" fill="none">
+            <path d="M25.3333 9.33333H22.6667V8C22.6667 4.68629 19.9804 2 16.6667 2H15.3333C12.0196 2 9.33333 4.68629 9.33333 8V9.33333H6.66667C5.19391 9.33333 4 10.5272 4 12V26.6667C4 28.1394 5.19391 29.3333 6.66667 29.3333H25.3333C26.8061 29.3333 28 28.1394 28 26.6667V12C28 10.5272 26.8061 9.33333 25.3333 9.33333ZM12 8C12 6.15905 13.4924 4.66667 15.3333 4.66667H16.6667C18.5076 4.66667 20 6.15905 20 8V9.33333H12V8Z" fill="#1A1A1A"/>
+          </svg>
+        </a>
+        <button class="icon-btn" aria-label="Profile">
+          <svg class="icon" viewBox="0 0 32 32" fill="none">
+            <path d="M16 4C12.6863 4 10 6.68629 10 10C10 13.3137 12.6863 16 16 16C19.3137 16 22 13.3137 22 10C22 6.68629 19.3137 4 16 4ZM7.33333 24C7.33333 20.3181 10.3181 17.3333 14 17.3333H18C21.6819 17.3333 24.6667 20.3181 24.6667 24V26.6667C24.6667 27.403 24.0697 28 23.3333 28H8.66667C7.93029 28 7.33333 27.403 7.33333 26.6667V24Z" fill="#1A1A1A"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="header-border"></div>
+  </header>
+
+  <main class="main-content">
+    <div class="screen active">
+      <div class="confirmation-content">
+
+        <!-- Hero order number -->
+        <div class="confirm-hero">
+          <p class="confirm-hero-eyebrow">Your Order</p>
+          <div class="confirm-order-number" id="orderNumber">—</div>
+          <p class="confirm-order-label">Order Number</p>
+          <div class="confirm-pickup-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Pick up at <strong id="pickupTime" style="margin-left:4px">—</strong>
+          </div>
+        </div>
+
+        <!-- Friendly message -->
+        <p class="confirm-message">KC's on it! 🍓</p>
+        <p class="confirm-submessage">Head over when you're ready — we'll have it waiting.</p>
+
+        <!-- Order summary card -->
+        <div class="confirmation-summary">
+          <h3 class="section-title" style="margin-bottom:14px">What's in your bag</h3>
+          <div id="confirmationOrderItems" class="confirmation-order-items"></div>
+          <div class="divider"></div>
+          <div class="summary-row"><span>Subtotal</span><span id="confirmSubtotal">$0.00</span></div>
+          <div class="summary-row"><span>Tax</span><span id="confirmTax">$0.00</span></div>
+          <div class="summary-row"><span>Tip</span><span id="confirmTip">$0.00</span></div>
+          <div class="summary-row total-row"><span>Total</span><span id="confirmTotal">$0.00</span></div>
+        </div>
+
+        <button id="returnHomeBtn" class="return-home-btn">Back to the Menu</button>
+
+      </div>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <div class="nav-border"></div>
+    <a href="index.html" class="nav-btn active" style="text-decoration:none;" onclick="localStorage.removeItem('kcs_last_order')">
+      <svg class="nav-icon" viewBox="0 0 32 32" fill="none">
+        <line x1="19" y1="4" x2="15" y2="13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M8 13H24L21.5 25.5C21.2 26.9 19.9 28 18.5 28H13.5C12.1 28 10.8 26.9 10.5 25.5L8 13Z" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M6.5 11C6.5 10.17 7.17 9.5 8 9.5H24C24.83 9.5 25.5 10.17 25.5 11V13H6.5V11Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="13.5" cy="20" r="1.5" fill="currentColor" opacity="0.7"/>
+        <circle cx="18" cy="22.5" r="1.2" fill="currentColor" opacity="0.7"/>
+        <circle cx="16" cy="18" r="1" fill="currentColor" opacity="0.5"/>
+      </svg>
+      <span class="nav-label">Order</span>
+    </a>
+    <a href="history.html" class="nav-btn" style="text-decoration:none;">
+      <svg class="nav-icon" viewBox="0 0 32 32" fill="none">
+        <path d="M16 6V16L22 19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <circle cx="16" cy="16" r="10" stroke="currentColor" stroke-width="2.5" fill="none"/>
+      </svg>
+      <span class="nav-label">History</span>
+    </a>
+  </nav>
+
+</div>
+<script>
+  const saved = localStorage.getItem('kcs_last_order');
+
+  if (saved) {
+    const order = JSON.parse(saved);
+
+    document.getElementById('orderNumber').textContent   = order.orderNumber;
+    document.getElementById('pickupTime').textContent    = order.pickupTime;
+    document.getElementById('confirmSubtotal').textContent = '$' + order.subtotal;
+    document.getElementById('confirmTax').textContent      = '$' + order.tax;
+    document.getElementById('confirmTip').textContent      = '$' + order.tip;
+    document.getElementById('confirmTotal').textContent    = '$' + order.total;
+
+    document.getElementById('confirmationOrderItems').innerHTML = order.items.map(item => `
+      <div class="order-item">
+        <div class="order-item-header">
+          <span>${item.qty}x ${item.name}</span>
+          <span>$${item.price}</span>
+        </div>
+        <div class="order-item-details">${item.size}${item.details ? ', ' + item.details : ''}</div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('returnHomeBtn').addEventListener('click', function() {
+    window.location.href = 'index.html';
+  });
+</script>
+</body>
+</html>

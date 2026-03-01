@@ -431,6 +431,460 @@
     <!-- bottom nav -->
     <nav id="bottomNav" class="bottom-nav">
       <div class="nav-border"></div>
+      <button class="nav-btn active" data-tab="order">
+        <svg class="nav-icon" viewBox="0 0 32 32" fill="none">
+          <path d="M8 6C6.89543 6 6 6.89543 6 8V10C6 11.1046 6.89543 12 8 12H10C11.1046 12 12 11.1046 12 10V8C12 6.89543 11.1046 6 10 6H8ZM8 18C6.89543 18 6 18.8954 6 20V22C6 23.1046 6.89543 24 8 24H10C11.1046 24 12 23.1046 12 22V20C12 18.8954 11.1046 18 10 18H8ZM18 8C18 6.89543 18.8954 6 20 6H22C23.1046 6 24 6.89543 24 8V10C24 11.1046 23.1046 12 22 12H20C18.8954 12 18 11.1046 18 10V8ZM20 18C18.8954 18 18 18.8954 18 20V22C18 23.1046 18.8954 24 20 24H22C23.1046 24 24 23.1046 24 22V20C24 18.8954 23.1046 18 22 18H20Z" fill="currentColor"/>
+        </svg>
+        <span class="nav-label">Order</span>
+      </button>
+      <button class="nav-btn" data-tab="history">
+        <svg class="nav-icon" viewBox="0 0 32 32" fill="none">
+          <path d="M16 6V16L22 19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <circle cx="16" cy="16" r="10" stroke="currentColor" stroke-width="2.5" fill="none"/>
+        </svg>
+        <span class="nav-label">History</span>
+      </button>
+    </nav>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KC's Fresh Fruit and Smoothies</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" class="app-container">
+    <!-- header -->
+    <header id="header" class="header">
+      <div class="header-content">
+         <img src="./img/KC’s.svg" alt="KC's Smoothie Bar" class="logo" onclick="navigateTo('home')" style="cursor: pointer;">
+        <div class="header-actions">
+          <button id="bagBtn" class="icon-btn">
+            <svg class="icon" viewBox="0 0 32 32" fill="none">
+              <path d="M25.3333 9.33333H22.6667V8C22.6667 4.68629 19.9804 2 16.6667 2H15.3333C12.0196 2 9.33333 4.68629 9.33333 8V9.33333H6.66667C5.19391 9.33333 4 10.5272 4 12V26.6667C4 28.1394 5.19391 29.3333 6.66667 29.3333H25.3333C26.8061 29.3333 28 28.1394 28 26.6667V12C28 10.5272 26.8061 9.33333 25.3333 9.33333ZM12 8C12 6.15905 13.4924 4.66667 15.3333 4.66667H16.6667C18.5076 4.66667 20 6.15905 20 8V9.33333H12V8Z" fill="#1A1A1A"/>
+            </svg>
+            <span id="cartBadge" class="cart-badge hidden">0</span>
+          </button>
+          <button id="profileBtn" class="icon-btn">
+            <svg class="icon" viewBox="0 0 32 32" fill="none">
+              <path d="M16 4C12.6863 4 10 6.68629 10 10C10 13.3137 12.6863 16 16 16C19.3137 16 22 13.3137 22 10C22 6.68629 19.3137 4 16 4ZM7.33333 24C7.33333 20.3181 10.3181 17.3333 14 17.3333H18C21.6819 17.3333 24.6667 20.3181 24.6667 24V26.6667C24.6667 27.403 24.0697 28 23.3333 28H8.66667C7.93029 28 7.33333 27.403 7.33333 26.6667V24Z" fill="#1A1A1A"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="header-border"></div>
+    </header>
+
+    <!-- main -->
+    <main id="mainContent" class="main-content">
+      <!-- Home Screen -->
+      <div id="homeScreen" class="screen active">
+          <div id="orderStatusBanner" class="order-status-banner" role="button" tabindex="0" aria-label="View order status">
+    <div class="order-status-left">
+      <svg class="order-status-icon" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span id="orderStatusText" class="order-status-text">KC is preparing your order</span>
+    </div>
+    <svg class="order-status-chevron" viewBox="0 0 24 24" fill="none">
+      <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+        <div class="location-banner">
+          <svg class="banner-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="white"/>
+          </svg>
+          <p class="banner-text">33rd St. & Lancaster Walk</p>
+        </div>
+
+        <!-- Order Status Banner -->
+        <div id="orderStatusBanner" class="order-status-banner hidden">
+          <div class="order-status-content">
+            <div class="order-status-header">
+              <div class="order-status-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                  <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="order-status-text">
+                <p class="order-status-title">Order #<span id="statusOrderNumber">43</span> In Progress</p>
+                <p class="order-status-time">Ready at <span id="statusPickupTime">12:40 PM</span></p>
+              </div>
+            </div>
+            <button id="viewOrderBtn" class="view-order-btn">View Order</button>
+          </div>
+        </div>
+
+        <div class="welcome-section">
+          <h2 class="welcome-title">What are you craving?</h2>
+          
+          <div class="welcome-hint">
+            <p>👋 Tap any treat to customize!</p>
+          </div>
+
+          <div class="smoothie-grid">
+            <!-- custom smoothie -->
+            <div class="smoothie-card" data-smoothie="Custom Smoothie">
+              <div class="card-bg"></div>
+              <img src="./img/smoothie.avif" alt="Custom Smoothie" class="smoothie-image">
+              <h3 class="smoothie-name">Custom<br>Smoothie</h3>
+            </div>
+
+            <!-- fruit salad -->
+            <div class="smoothie-card" data-smoothie="Fruit Salad">
+              <div class="card-bg"></div>
+              <img src="./img/fruit_salad.avif" alt="Fruit Salad" class="smoothie-image">
+              <h3 class="smoothie-name">Custom<br>Fruit Salad</h3>
+            </div>
+
+            <!-- pb banana smoothie -->
+            <div class="smoothie-card" data-smoothie="P.B. Banana">
+              <div class="card-bg"></div>
+              <img src="./img/pb_banana.avif" alt="P.B. Banana" class="smoothie-image">
+              <h3 class="smoothie-name">P.B. Banana<br>Smoothie</h3>
+            </div>
+
+            <!-- Taro Card -->
+            <div class="smoothie-card" data-smoothie="Taro">
+              <div class="card-bg"></div>
+              <img src="./img/taro.avif" alt="Taro" class="smoothie-image">
+              <h3 class="smoothie-name">Taro<br>Smoothie</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- customization -->
+      <div id="customizeScreen" class="screen">
+        <button id="backBtn" class="back-btn">
+          <svg viewBox="0 0 36 36" fill="none">
+            <path d="M22.5 9L13.5 18L22.5 27" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </button>
+
+        <div class="customize-content">
+          <h2 id="customizeTitle" class="screen-title">Custom Smoothie</h2>
+
+          <div class="customize-image">
+            <img id="customizeImage" src="./img/smoothie.avif" alt="Smoothie">
+          </div>
+
+          <!-- Size Selection -->
+          <div class="section">
+            <h3 class="section-title">Select Size</h3>
+            <div class="size-options">
+              <button class="size-btn" data-size="Small" data-price="4.50">
+                <span class="size-label">Small</span>
+                <span class="size-price">$4.50</span>
+              </button>
+              <button class="size-btn active" data-size="Medium" data-price="5.50">
+                <span class="size-label">Medium</span>
+                <span class="size-price">$5.50</span>
+              </button>
+              <button class="size-btn" data-size="Large" data-price="6.50">
+                <span class="size-label">Large</span>
+                <span class="size-price">$6.50</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ingredients -->
+          <div class="section">
+            <h3 class="section-title">Ingredients</h3>
+            <div class="checkbox-grid">
+              <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-checkbox" value="Strawberry">
+                <span class="checkbox-custom"></span>
+                <span>Strawberry</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-checkbox" value="Banana">
+                <span class="checkbox-custom"></span>
+                <span>Banana</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-checkbox" value="Mango">
+                <span class="checkbox-custom"></span>
+                <span>Mango</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-checkbox" value="Blueberry">
+                <span class="checkbox-custom"></span>
+                <span>Blueberry</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-checkbox" value="Pineapple">
+                <span class="checkbox-custom"></span>
+                <span>Pineapple</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="ingredient-checkbox" value="Spinach">
+                <span class="checkbox-custom"></span>
+                <span>Spinach</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- addons -->
+          <div class="section">
+            <h3 class="section-title">Add-ons (+$1.00 each)</h3>
+            <div class="checkbox-grid">
+              <label class="checkbox-label">
+                <input type="checkbox" class="addon-checkbox" value="Protein Powder">
+                <span class="checkbox-custom"></span>
+                <span>Protein Powder</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="addon-checkbox" value="Chia Seeds">
+                <span class="checkbox-custom"></span>
+                <span>Chia Seeds</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="addon-checkbox" value="Peanut Butter">
+                <span class="checkbox-custom"></span>
+                <span>Peanut Butter</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="addon-checkbox" value="Honey">
+                <span class="checkbox-custom"></span>
+                <span>Honey</span>
+              </label>
+            </div>
+          </div>
+
+          <button id="addToBagBtn" class="add-to-bag-btn">
+            <span id="addToBagText">Add to Bag</span>
+            <span id="addToBagPrice">$5.50</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- bag/cart  -->
+      <div id="bagScreen" class="screen">
+        <button id="backFromBagBtn" class="back-btn">
+          <svg viewBox="0 0 36 36" fill="none">
+            <path d="M22.5 9L13.5 18L22.5 27" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </button>
+
+        <div class="bag-content">
+          <h2 class="screen-title">Your Items</h2>
+
+          <div id="cartItemsContainer" class="cart-items">
+            <!-- Cart items will be inserted here -->
+          </div>
+
+          <div id="emptyCartMessage" class="empty-cart">
+            <p>Don't leave your cup empty!</p>
+            <button id="startShoppingBtn" class="secondary-btn">Start Mixing</button>
+          </div>
+
+          <div id="cartSummary" class="cart-summary hidden">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="subtotalAmount">$0.00</span>
+            </div>
+            <button id="checkoutBtn" class="checkout-btn">
+              Proceed to Checkout
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Checkout Screen -->
+      <div id="checkoutScreen" class="screen">
+        <button id="backFromCheckoutBtn" class="back-btn">
+          <svg viewBox="0 0 36 36" fill="none">
+            <path d="M22.5 9L13.5 18L22.5 27" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </button>
+
+        <div class="checkout-content">
+          <h2 class="screen-title">Checkout</h2>
+
+          <!-- Pick-Up Time -->
+          <div class="section">
+            <h3 class="section-title">Pick-Up Time</h3>
+            <button class="pickup-option active" data-pickup="asap">
+              <span>ASAP (10-15 Minutes)</span>
+              <div class="radio-btn">
+                <div class="radio-dot"></div>
+              </div>
+            </button>
+            <button class="pickup-option" data-pickup="scheduled">
+              <span>Schedule Ahead</span>
+              <div class="radio-btn">
+                <div class="radio-dot"></div>
+              </div>
+            </button>
+            
+            <!-- Time Picker Dropdown (hidden by default) -->
+            <div id="timePickerDropdown" class="time-picker-dropdown hidden">
+              <label for="scheduledTime" class="time-picker-label">Select pickup time:</label>
+              <select id="scheduledTime" class="time-picker-select">
+                <!-- Time options will be populated by JavaScript -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Pick-up Name -->
+          <div class="section">
+            <h3 class="section-subtitle">Pick-up Name</h3>
+            <input type="text" id="pickupName" class="text-input" placeholder="Name" value="">
+          </div>
+
+          <!-- Payment Method -->
+          <div class="section">
+            <h3 class="section-title">Payment Method</h3>
+            <button class="payment-option active" data-payment="credit">
+              <div class="payment-left">
+                <svg class="payment-icon" viewBox="0 0 36 24" fill="none">
+                  <path d="M3 0C1.34315 0 0 1.34315 0 3V21C0 22.6569 1.34315 24 3 24H33C34.6569 24 36 22.6569 36 21V3C36 1.34315 34.6569 0 33 0H3ZM0 6H36V8H0V6ZM4 14H12V16H4V14Z" fill="#1A1A1A"/>
+                </svg>
+                <span>Credit</span>
+              </div>
+              <div class="radio-btn">
+                <div class="radio-dot"></div>
+              </div>
+            </button>
+            <button class="payment-option" data-payment="apple">
+              <div class="payment-left">
+                <span class="payment-icon apple-icon">
+                  <svg viewBox="0 0 18 22" fill="none">
+                    <path d="M17.23 18.27C16.89 19.09 16.48 19.84 16 20.52C15.32 21.48 14.77 22.13 14.36 22.46C13.69 23.05 12.97 23.35 12.19 23.36C11.64 23.36 10.97 23.2 10.19 22.87C9.4 22.55 8.68 22.39 8.02 22.39C7.33 22.39 6.59 22.55 5.8 22.87C5.01 23.2 4.37 23.37 3.88 23.38C3.13 23.4 2.4 23.09 1.69 22.46C1.24 22.09 0.66 21.42 0 20.45C-0.71 19.4 -1.28 18.18 -1.72 16.79C-2.19 15.26 -2.43 13.79 -2.43 12.38C-2.43 10.76 -2.11 9.36 -1.47 8.19C-0.97 7.27 -0.29 6.55 0.57 6.02C1.43 5.49 2.38 5.22 3.42 5.21C4 5.21 4.75 5.39 5.67 5.74C6.58 6.09 7.17 6.27 7.43 6.27C7.62 6.27 8.28 6.06 9.39 5.64C10.44 5.25 11.34 5.09 12.08 5.15C14.03 5.3 15.5 6.07 16.47 7.47C14.77 8.54 13.93 10.02 13.95 11.92C13.97 13.42 14.5 14.68 15.54 15.68C16.01 16.15 16.54 16.51 17.14 16.77C17.01 17.15 16.87 17.51 16.72 17.86L17.23 18.27Z" fill="#1A1A1A" transform="translate(0 -3)"/>
+                  </svg>
+                </span>
+                <span>Apple Pay</span>
+              </div>
+              <div class="radio-btn">
+                <div class="radio-dot"></div>
+              </div>
+            </button>
+            <button class="payment-option" data-payment="venmo">
+              <div class="payment-left">
+                <div class="payment-icon venmo-icon">
+                  <span>V</span>
+                </div>
+                <span>Venmo</span>
+              </div>
+              <div class="radio-btn">
+                <div class="radio-dot"></div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Tip -->
+          <div class="section">
+            <h3 class="section-title">Leave a tip for KC!</h3>
+            <div class="tip-options">
+              <button class="tip-btn" data-tip="custom">Custom</button>
+              <button class="tip-btn" data-tip="15">15%</button>
+              <button class="tip-btn active" data-tip="20">20%</button>
+            </div>
+
+            <div class="custom-tip-input-wrapper" id="customTipWrapper">
+  <span class="custom-tip-prefix">$</span>
+  <input 
+    type="number" 
+    id="customTipInput" 
+    class="custom-tip-input" 
+    placeholder="0.00" 
+    min="0" 
+    step="0.01"
+  >
+</div>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="section">
+            <h3 class="section-title">Order Summary</h3>
+            <div id="checkoutOrderItems" class="checkout-order-items">
+              <!-- Order items will be inserted here -->
+            </div>
+            <div class="divider"></div>
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="checkoutSubtotal">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Tax</span>
+              <span id="checkoutTax">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Tip</span>
+              <span id="checkoutTip">$0.00</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Total</span>
+              <span id="checkoutTotal">$0.00</span>
+            </div>
+          </div>
+
+          <button id="placeOrderBtn" class="place-order-btn">
+            Place Order
+          </button>
+        </div>
+      </div>
+
+      <!-- Confirmation Screen -->
+      <div id="confirmationScreen" class="screen">
+        <div class="confirmation-content">
+          <h2 class="confirmation-title">Order #<span id="orderNumber">43</span> Confirmed!</h2>
+
+          <div class="pickup-clock">
+            <div class="clock-inner">
+              <p class="clock-label">Pick-up Time</p>
+              <p class="clock-time" id="pickupTime">12:40 PM</p>
+            </div>
+          </div>
+
+          <div class="confirmation-summary">
+            <h3 class="section-title">Order Summary</h3>
+            <div id="confirmationOrderItems" class="confirmation-order-items">
+              <!-- Order items will be inserted here -->
+            </div>
+            <div class="divider"></div>
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="confirmSubtotal">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Tax</span>
+              <span id="confirmTax">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Tip</span>
+              <span id="confirmTip">$0.00</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Total</span>
+              <span id="confirmTotal">$0.00</span>
+            </div>
+          </div>
+
+          <button id="returnHomeBtn" class="return-home-btn">
+            Return to Home
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- bottom nav -->
+    <nav id="bottomNav" class="bottom-nav">
+      <div class="nav-border"></div>
       
 <button class="nav-btn active" data-tab="order">
   <svg class="nav-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
