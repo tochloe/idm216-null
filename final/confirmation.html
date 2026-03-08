@@ -119,6 +119,32 @@
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* Picked up button */
+.picked-up-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: white;
+  color: #1a9e72;
+  border: 2px solid #1a9e72;
+  border-radius: 18px;
+  padding: 15px;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 12px;
+  font-family: 'Nunito', sans-serif;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: fadeUp 0.4s 0.58s ease both;
+}
+
+.picked-up-btn:active {
+  transform: scale(0.97);
+  background: #f0fdf8;
+}
   </style>
 </head>
 <body>
@@ -178,6 +204,13 @@
 
         <button id="returnHomeBtn" class="return-home-btn">Back to the Menu</button>
 
+        <button id="pickedUpBtn" class="picked-up-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0;">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+          I picked up my order
+        </button>
+
       </div>
     </div>
   </main>
@@ -230,6 +263,11 @@
   }
 
   document.getElementById('returnHomeBtn').addEventListener('click', function() {
+    window.location.href = 'index.html';
+  });
+
+  document.getElementById('pickedUpBtn').addEventListener('click', function() {
+    localStorage.removeItem('kcs_last_order');
     window.location.href = 'index.html';
   });
 </script>
